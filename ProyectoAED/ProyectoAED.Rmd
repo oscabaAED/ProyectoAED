@@ -249,8 +249,28 @@ knitr::kable(rticles::string_to_table(mdpi_journals, 8),
 ```
 \finishlandscape
 
+# Importación
+Pongo este apartado aquí no porque esté segura de que es el primero sino para que se vea más, he hecho algunas pruebas para importar uno de los dataframes lo voy dejando aquí por si sirve
 
+```{r}
+variables <- c('Nombre', 'Nac.', 'Nac./1000')
+# La idea sería poder hacer un bucle que los lea todos con esto en algún momento
+ficheros <- paste0('data/',list.files('data'))
+decadas <- gsub("[.]csv","",str_extract(list.files('data'),'[a-z0-9]+[.]csv'))
+#decadas <- gsub('[3-9]0','19',decadas
 
+# Primer dataframe al que añadiremos el resto por columnas
+prueba <- read.csv(ficheros[1], header = F, sep='\t', skip=7, encoding = 'windows-1252', dec=',')
+prueba[,'V3'] <- as.numeric(gsub('[.]','',prueba[,'V3']))
+
+prueba2 <- prueba[,c(2,3,4)]
+colnames(prueba2) <- c(c('Nombre'),paste0(variables[c(2,3)],'_',decadas[1]))
+if(grepl('H',ficheros[1])){
+  prueba2$Sexo <- 'Hombre'
+} else if(grepl('M',ficheros[1])){
+  prueba2$Sexo <- 'Mujer'
+}
+```
 
 # Introduction
 
