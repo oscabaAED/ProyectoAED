@@ -323,7 +323,8 @@ while(i<=length(ficheros)){
       PrimerH <- FALSE
     } else{
       # El resto se unen a partir de coincidencias en la columna de nombres
-      TotalH <- merge(x = TotalH, y = auxdf, by = "Nombre")
+      TotalH <- merge(x = TotalH, y = auxdf, by = "Nombre", all=TRUE)
+      TotalH$Sexo <- 'Hombre'
     }
   } else if(grepl('M',ficheros[i])){
     if(PrimerM){
@@ -331,7 +332,8 @@ while(i<=length(ficheros)){
       TotalM <- auxdf
       PrimerM <- FALSE
     } else{
-      TotalM <- merge(x = TotalM, y = auxdf, by = "Nombre")
+      TotalM <- merge(x = TotalM, y = auxdf, by = "Nombre", all=TRUE)
+      TotalM$Sexo <- 'Mujer'
     }
   }
   
@@ -341,6 +343,7 @@ while(i<=length(ficheros)){
 # También lo podemos guardar como un nuevo archivo si es más fácil leer eso directamente para otros pasos
 # pero habrá que hacer algo para que la variable ficheros no lea ese también o lo irá duplicando cuando abramos el programa
 Nombres <- rbind(TotalH,TotalM)
+Nombres$Sexo <- factor(Nombres$Sexo)
 ```
 
 
