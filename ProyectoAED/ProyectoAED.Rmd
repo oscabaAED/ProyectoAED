@@ -301,6 +301,32 @@ ficheros <- paste0('../data/',list.files('../data'))
 # Esto recoge la parte numérica al final del fichero que es donde están las últimas dos cifras de la década
 decadas <- gsub("[.]csv","",str_extract(list.files('../data'),'[a-z0-9\\-]+[.]csv'))
 
+# Elimina los menores de 30 y convierte los números a década completa
+decadas <- sapply(decadas, function(x) {
+  # Si es menor30, se descarta devolviendo NA
+  if (grepl("menor30", x, ignore.case = TRUE)) {
+    return(NA)
+  }
+  # Si es 30-39 lo pasamos a 1930
+  if (grepl("30-39", x)) {
+    return("1930")
+  }
+  # Extrae las dos últimas cifras para convertirlas a década completa
+  num <- as.numeric(str_extract(x, "\\d{2}$"))
+  if (is.na(num)) return(NA)
+  
+  # Partimos de 1930 hasta 2020
+  if (num >= 30) {
+    return(as.character(1900 + num))
+  } else {
+    return(as.character(2000 + num))
+  }
+})
+# Elimina los NAs correspondientes a menor30
+valid_dec <- !is.na(decadas)
+ficheros <- ficheros[valid_dec]
+decadas <- decadas[valid_dec]
+
 
 PrimerH <- TRUE
 PrimerM <- TRUE
@@ -344,6 +370,23 @@ while(i<=length(ficheros)){
 # pero habrá que hacer algo para que la variable ficheros no lea ese también o lo irá duplicando cuando abramos el programa
 Nombres <- rbind(TotalH,TotalM)
 Nombres$Sexo <- factor(Nombres$Sexo)
+```
+
+# Pasar a long
+```{r}
+library(tidyr)
+library(dplyr)
+
+# Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
+Nombres_longer <- Nombres %>%
+  pivot_longer(cols = -c(Nombre, Sexo), names_to = "TipoDecada", values_to = "Valor") %>%
+  separate(TipoDecada, into = c("Tipo", "Decada"), sep = "_") # Dividimos las dos variables de nacimientos en dos columnas
+
+# Convertimos a longer para poder obtener por separado ambas variables de nacimientos
+Nombres_tidy <- Nombres_longer %>% 
+  pivot_wider(names_from = "Tipo", values_from = "Valor")
+
+# Habría que hacer un group_by decadas para poder sacar el orden de los nombres a lo largo del tiempo
 ```
 
 
