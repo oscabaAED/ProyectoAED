@@ -259,6 +259,8 @@ library('stringr')
 
 variables <- c('Nombre', 'Nac.', 'Nac./1000')
 ficheros <- paste0('../data/',list.files('../data'))
+# Seleccionar solo los archivos que sabemos que tienen los datos de nombres
+ficheros <- grep('nombres.*[.]csv',ficheros, value=T)
 # Esto recoge la parte numérica al final del fichero que es donde están las últimas dos cifras de la década
 decadas <- gsub("[.]csv","",str_extract(list.files('../data'),'[a-z0-9\\-]+[.]csv'))
 
@@ -330,6 +332,11 @@ TotalH$Sexo <- 'Hombre'
 # Dataset final total uniendo el de hombres y mujeres (luego vemos como ordenamos filas y columnas)
 Nombres <- rbind(TotalH,TotalM)
 Nombres$Sexo <- factor(Nombres$Sexo)
+
+# Lo voy a guardar y eliminar las variables que no usamos más porque son grandes, ocuparán bastante
+save(Nombres, file = '../data/NombresSucio.RData')
+rm(list = ls())
+load('../data/NombresSucio.RData')
 ```
 
 # Pasar a long
