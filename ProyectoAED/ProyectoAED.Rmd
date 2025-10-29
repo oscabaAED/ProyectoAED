@@ -252,45 +252,6 @@ knitr::kable(rticles::string_to_table(mdpi_journals, 8),
 # Importación
 Pongo este apartado aquí no porque esté segura de que es el primero sino para que se vea más, he hecho algunas pruebas para importar uno de los dataframes lo voy dejando aquí por si sirve
 
-```{r}
-# ESTO SON LAS PRUEBAS
-library('stringr')
-variables <- c('Nombre', 'Nac.', 'Nac./1000')
-# La idea sería poder hacer un bucle que los lea todos con esto en algún momento
-ficheros <- paste0('../data/',list.files('../data'))
-decadas <- gsub("[.]csv","",str_extract(list.files('../data'),'[a-z0-9]+[.]csv'))
-#decadas <- gsub('[3-9]0','19',decadas
-
-# Primer dataframe al que añadiremos el resto por columnas
-prueba <- read.csv(ficheros[1], header = F, sep='\t', skip=7, encoding = 'windows-1252', dec=',')
-prueba[,'V3'] <- as.numeric(gsub('[.]','',prueba[,'V3']))
-
-prueba2 <- prueba[,c(2,3,4)]
-colnames(prueba2) <- c(c('Nombre'),paste0(variables[c(2,3)],'_',decadas[1]))
-# Eliminar las filas que salen con NA (hacer ahora porque si se hace en el grande puede borrar algunas que tengan NA solo en algunos años)
-prueba2 <- prueba2[!(rowSums(is.na(prueba2))>0),]
-# Ahora que lo pienso creo que para unirlo bien habría que hacer por un lado hombres y por otro mujeres, y luego todo
-if(grepl('H',ficheros[1])){
-  prueba2$Sexo <- 'Hombre'
-} else if(grepl('M',ficheros[1])){
-  prueba2$Sexo <- 'Mujer'
-}
-
-# Primer dataframe al que añadiremos el resto por columnas
-prueba3 <- read.csv(ficheros[2], header = F, sep='\t', skip=7, encoding = 'windows-1252', dec=',')
-prueba3[,'V3'] <- as.numeric(gsub('[.]','',prueba3[,'V3']))
-
-prueba3 <- prueba3[,c(2,3,4)]
-colnames(prueba3) <- c(c('Nombre'),paste0(variables[c(2,3)],'_',decadas[2]))
-# Ahora que lo pienso creo que para unirlo bien habría que hacer por un lado hombres y por otro mujeres, y luego todo
-prueba3 <- prueba3[!(rowSums(is.na(prueba2))>0),]
-if(grepl('H',ficheros[1])){
-  TotalH <- merge(x = prueba2, y = prueba3, by = "Nombre")
-} else if(grepl('M',ficheros[1])){
-  prueba2$Sexo <- 'Mujer'
-}
-
-```
 
 ```{r}
 # ESTO EN TEORÍA FUNCIONA, para leerlos todos
@@ -332,7 +293,9 @@ PrimerH <- TRUE
 PrimerM <- TRUE
 i <- 1
 while(i<=length(ficheros)){
+  # Lee cada fichero en una variable auxiliar
   auxdf <- read.csv(ficheros[i], header = F, sep='\t', skip=7, encoding = 'windows-1252', dec=',')
+  # Convierte los miles realmente a miles (el . hacía que fuera considerado string)
   auxdf[,'V3'] <- as.numeric(gsub('[.]','',auxdf[,'V3']))
   # Sale una columna solo con el numero de nombre 1,2,3... la quitamos
   auxdf <- auxdf[,-1]
@@ -343,31 +306,28 @@ while(i<=length(ficheros)){
   # Juntaremos todos los datasets de nombres de hombre y luego todos los de mujer, al final ya lo uniremos todo
   if(grepl('H',ficheros[i])){ # Identifica qué datos son de hombres porque hay H en el nombre del fichero, para mujeres M
     if(PrimerH){
-      # Para el primero añadimos la columna de sexo y lo ponemos como base para el total
-      auxdf$Sexo <- 'Hombre'
       TotalH <- auxdf
       PrimerH <- FALSE
     } else{
       # El resto se unen a partir de coincidencias en la columna de nombres
       TotalH <- merge(x = TotalH, y = auxdf, by = "Nombre", all=TRUE)
-      TotalH$Sexo <- 'Hombre'
     }
   } else if(grepl('M',ficheros[i])){
     if(PrimerM){
-      auxdf$Sexo <- 'Mujer'
       TotalM <- auxdf
       PrimerM <- FALSE
     } else{
       TotalM <- merge(x = TotalM, y = auxdf, by = "Nombre", all=TRUE)
-      TotalM$Sexo <- 'Mujer'
     }
   }
   
   i <- i+1
 }
+# Añadimos aquí las columnas de sexo ya que sabemos cuál corresponde a cada grupo de datos
+TotalM$Sexo <- 'Mujer'
+TotalH$Sexo <- 'Hombre'
+
 # Dataset final total uniendo el de hombres y mujeres (luego vemos como ordenamos filas y columnas)
-# También lo podemos guardar como un nuevo archivo si es más fácil leer eso directamente para otros pasos
-# pero habrá que hacer algo para que la variable ficheros no lea ese también o lo irá duplicando cuando abramos el programa
 Nombres <- rbind(TotalH,TotalM)
 Nombres$Sexo <- factor(Nombres$Sexo)
 ```
