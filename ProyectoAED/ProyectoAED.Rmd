@@ -375,6 +375,25 @@ Nombres_nb <- function(decada){
 # No parece dividirse por décadas
 Nombres_nb(1930)
 ```
+```{r}
+#Ver los 5 nombres más populares de mujeres en cada año 
+Nom_populares_mujeres <- Nombres_tidy %>%
+  filter(Sexo == 'Mujer') %>%
+  group_by(Decada) %>%
+  arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de mujeres nacidas con ese nombre)
+  slice(1:5) %>%
+  ungroup()
+print(Nom_populares_mujeres)
+
+#Hago lo mismo para los hombres
+Nom_populares_hombres <- Nombres_tidy %>%
+  filter(Sexo == 'Hombre') %>%
+  group_by(Decada) %>%
+  arrange(desc(Nac.)) %>% 
+  slice(1:5) %>%
+  ungroup()
+print(Nom_populares_hombres)
+```
 
 
 # Introduction
