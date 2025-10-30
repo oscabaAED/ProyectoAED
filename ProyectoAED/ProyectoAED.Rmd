@@ -377,22 +377,20 @@ Nombres_nb(1930)
 ```
 ```{r}
 #Ver los 5 nombres más populares de mujeres en cada año 
-Nom_populares_mujeres <- Nombres_tidy %>%
-  filter(Sexo == 'Mujer') %>%
-  group_by(Decada) %>%
+Nom_populares <- Nombres_tidy %>%
+  group_by(Sexo, Decada) %>%
   arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de mujeres nacidas con ese nombre)
   slice(1:5) %>%
   ungroup()
-print(Nom_populares_mujeres)
+print(Nom_populares)
 
-#Hago lo mismo para los hombres
-Nom_populares_hombres <- Nombres_tidy %>%
-  filter(Sexo == 'Hombre') %>%
-  group_by(Decada) %>%
-  arrange(desc(Nac.)) %>% 
-  slice(1:5) %>%
-  ungroup()
-print(Nom_populares_hombres)
+#Gráficos para ver los 10 nombres más comunes por año (5 mujeres y 5 hombres)
+library(ggplot2)
+
+df_1930 <- Nom_populares %>%
+  filter(Decada == '1930')
+g1930<-ggplot(data=df_1930, aes(x=Nombre, y=Nac.)) + geom_col(aes(fill = Sexo)) + facet_grid(~ Sexo) + xlab('Nombres') + ylab('Número de Nacimientos') + ggtitle('5 Nombres más populares en 1930 en la provincia de Valencia')
+g1930
 ```
 
 
