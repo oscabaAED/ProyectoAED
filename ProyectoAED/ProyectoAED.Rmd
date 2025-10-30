@@ -296,7 +296,7 @@ PrimerM <- TRUE
 i <- 1
 while(i<=length(ficheros)){
   # Lee cada fichero en una variable auxiliar
-  auxdf <- read.csv(ficheros[i], header = F, sep='\t', skip=7, encoding = 'windows-1252', dec=',')
+  auxdf <- read.csv(ficheros[i], header = F, sep='\t', skip=7, fileEncoding = 'Windows-1252', dec=',')
   # Convierte los miles realmente a miles (el . hacía que fuera considerado string)
   auxdf[,'V3'] <- as.numeric(gsub('[.]','',auxdf[,'V3']))
   # Sale una columna solo con el numero de nombre 1,2,3... la quitamos
