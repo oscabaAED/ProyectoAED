@@ -346,10 +346,11 @@ library(dplyr)
 
 # Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
 Nombres_longer <- Nombres %>%
+  relocate(`Nac._2000`:`Nac./1000_2020`, .after = `Nac./1000_1990`) %>%  # Reordenamos primero las columnas de 1930 a 2020
   pivot_longer(cols = -c(Nombre, Sexo), names_to = "TipoDecada", values_to = "Valor") %>%
   separate(TipoDecada, into = c("Tipo", "Decada"), sep = "_") # Dividimos las dos variables de nacimientos en dos columnas
 
-# Convertimos a longer para poder obtener por separado ambas variables de nacimientos
+# Convertimos a wider para poder obtener por separado ambas variables de nacimientos
 Nombres_tidy <- Nombres_longer %>% 
   pivot_wider(names_from = "Tipo", values_from = "Valor")
 
