@@ -354,7 +354,26 @@ Nombres_longer <- Nombres %>%
 Nombres_tidy <- Nombres_longer %>% 
   pivot_wider(names_from = "Tipo", values_from = "Valor")
 
-# Habría que hacer un group_by decadas para poder sacar el orden de los nombres a lo largo del tiempo
+# Si se aplica lo mismo pero con group_by(decadas) debería poder verse la evolución de cada nombre a lo largo del tiempo
+Decada_2000 <- Nombres_tidy %>%
+  filter(Decada == 2000, Sexo == "Hombre") %>% 
+  select(Nombre, `Nac./1000`, Sexo) %>%
+  arrange(desc(`Nac./1000`)) %>% 
+  group_by(Sexo)
+
+# Función para ver qué nombres aparecen en ambos sexos
+Nombres_nb <- function(decada){
+  Nombres_tidy %>%
+    filter(Decada == decada) %>%
+    distinct(Nombre, Sexo) %>% 
+    group_by(Nombre) %>% 
+    filter(n() == 2) %>% 
+    pull(Nombre) %>% 
+    unique()
+}
+
+# No parece dividirse por décadas
+Nombres_nb(1930)
 ```
 
 
