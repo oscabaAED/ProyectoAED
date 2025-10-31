@@ -389,7 +389,7 @@ library(ggplot2)
 
 df_1930 <- Nom_populares %>%
   filter(Decada == '1930')
-g1930<-ggplot(data=df_1930, aes(x=Nombre, y=Nac.)) + geom_col(aes(fill = Sexo)) + facet_grid(~ Sexo, scales = "free_x") + xlab('Nombres') + ylab('Número de Nacimientos') + ggtitle('5 Nombres más populares en 1930 en la provincia de Valencia') + theme(axis.text.x = element_text(angle=45, hjust = 1))
+g1930<-ggplot(data=df_1930, aes(x=reorder(Nombre, Nac.), y=Nac.)) + geom_col(aes(fill = Sexo)) + facet_grid(~ Sexo, scales = "free_x") + xlab('Nombres') + ylab('Número de Nacimientos') + ggtitle('5 Nombres más populares en 1930 en la provincia de Valencia') + theme(axis.text.x = element_text(angle=45, hjust = 1))
 g1930
 ```
 
