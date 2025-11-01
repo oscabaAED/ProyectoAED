@@ -582,6 +582,41 @@ grafico_evolucion(
   title = "Cantidad de Nombres Nuevos",
   subtitle = "Por década y género (1930-2020)"
 )
+
+
+## Número de nombres desaparecidos con el tiempo
+
+# Utilizamos el df del caso anterior para ver la última aparición de cada nombre
+Nombres_ultima_aparicion <- Nombres_unicos_decada %>%
+  group_by(Nombre, Sexo) %>%
+  summarise(UltimaDecada = max(Decada, na.rm = TRUE), .groups = "drop")
+
+# Excluimos 2020 porque es la última década que tenemos disponible
+max_decada_total <- max(Nombres_unicos_decada$Decada, na.rm = TRUE)
+
+Nombres_desaparecidos <- Nombres_ultima_aparicion %>%
+  filter(UltimaDecada < max_decada_total)
+
+desaparecidos_por_sexo <- Nombres_desaparecidos %>%
+  group_by(Decada = as.character(UltimaDecada), Sexo) %>%
+  summarise(NombresDesaparecidos = n(), .groups = "drop")
+
+desaparecidos_ambos <- desaparecidos_por_sexo %>%
+  group_by(Decada) %>%
+  summarise(NombresDesaparecidos = sum(NombresDesaparecidos, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(Sexo = "Ambos")
+
+Total_Nombres_Desaparecidos <- bind_rows(desaparecidos_por_sexo, desaparecidos_ambos) %>%
+  arrange(Decada, Sexo)
+
+grafico_evolucion(
+  data = Total_Nombres_Desaparecidos,
+  y_var = "NombresDesaparecidos",
+  y_lab = "Número de Nombres Desaparecidos",
+  title = "Nombres que Desaparecen por Década",
+  subtitle = "Nombres vistos por última vez en esa década (y que no reaparecen)",
+)
+
 ```
 
 ```{r}
