@@ -430,7 +430,7 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
 # Nacimientos totales agrupando por "Decada" y "Sexo"
 nacimientos_por_sexo <- Nombres_tidy %>%
   group_by(Decada, Sexo) %>%
-  summarise(TotalNacimientos = sum(Nac., na.rm = TRUE), .groups = 'drop')
+  summarise(TotalNacimientos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
 # Calcula el total de "Ambos" sumando los resultados ya calculados
 nacimientos_ambos <- nacimientos_por_sexo %>%
@@ -461,12 +461,12 @@ Nombres_longitud <- Nombres_tidy %>%
 # Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media
 medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
-  summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = 'drop')
+  summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = "drop")
 
 # Para ambos sexos se recalcula la media
 medias_ambos_sexos <- Nombres_longitud %>%
   group_by(Decada) %>%
-  summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = 'drop') %>%
+  summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = "drop") %>%
   mutate(Sexo = "Ambos")
 
 Longitud_media_comb <- bind_rows(medias_por_sexo, medias_ambos_sexos) %>%
@@ -490,7 +490,7 @@ Nombres_comp <- Nombres_tidy %>%
 # Suma los nacimientos de estos nombres compuestos, por sexo
 comp_por_sexo <- Nombres_comp %>%
   group_by(Decada, Sexo) %>%
-  summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = 'drop')
+  summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
 # Suma los totales por sexo para obtener el total de "Ambos"
 comp_ambos <- comp_por_sexo %>%
@@ -531,11 +531,11 @@ Nombres_variedad <- Nombres_tidy %>%
 # Calcula la cantidad de nombres distintos por década y sexo
 variedad_sexo <- Nombres_variedad %>%
   group_by(Decada, Sexo) %>%
-  summarise(NombresDistintos = n_distinct(Nombre), .groups = 'drop')
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop")
 
 variedad_ambos <- Nombres_variedad %>%
   group_by(Decada) %>%
-  summarise(NombresDistintos = n_distinct(Nombre), .groups = 'drop') %>% 
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop") %>% 
   mutate(Sexo = "Ambos")
 
 Variedad_Nombres_Decada <- bind_rows(variedad_sexo, variedad_ambos) %>%
@@ -546,6 +546,40 @@ grafico_evolucion(
   y_var = "NombresDistintos",
   y_lab = "Nombres Distintos",
   title = "Evolución de la Variedad de Nombres Distintos",
+  subtitle = "Por década y género (1930-2020)"
+)
+
+
+## Nuevos nombres por década y sexo
+
+Nombres_nuevos_decada <- Nombres_tidy %>%
+  filter(!is.na(Nac.) & Nac. > 0)
+
+Nombres_unicos_decada <- Nombres_nuevos_decada %>%
+  group_by(Decada, Sexo, Nombre) %>%
+  mutate(Decada = as.numeric(Decada))
+
+Nombres_primera_aparicion <- Nombres_unicos_decada %>%
+  group_by(Nombre, Sexo) %>%
+  summarise(PrimeraDecada = min(Decada, na.rm = T), .groups = "drop")
+
+nuevos_nombres_decada <- Nombres_primera_aparicion %>% 
+  group_by(Decada = as.character(PrimeraDecada), Sexo) %>% 
+  summarise(NuevosNombres = n(), .groups = "drop")
+
+nuevos_nombres_ambos <- nuevos_nombres_decada %>% 
+  group_by(Decada) %>% 
+  summarise(NuevosNombres = sum(NuevosNombres, na.rm = T), .groups = "drop") %>% 
+  mutate(Sexo = "Ambos")
+
+Nombres_Nuevos <- bind_rows(nuevos_nombres_decada, nuevos_nombres_ambos) %>%
+  arrange(Decada, Sexo)
+
+grafico_evolucion(
+  data = Nombres_Nuevos,
+  y_var = "NuevosNombres",
+  y_lab = "Nombres Nuevos",
+  title = "Cantidad de Nombres Nuevos",
   subtitle = "Por década y género (1930-2020)"
 )
 ```
