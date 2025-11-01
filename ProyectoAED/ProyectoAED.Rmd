@@ -355,7 +355,7 @@ Nombres_tidy <- Nombres_longer %>%
   pivot_wider(names_from = "Tipo", values_from = "Valor")
 ```
 
-## Pruebas de evoluciones temporales
+# Pruebas de evoluciones temporales
 ```{r}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
@@ -389,7 +389,7 @@ Nombres_nb <- function(decada){
 Nombres_nb(1930)
 ```
 
-## Gráficos tendencias nombres
+# Gráficos tendencias nombres
 ```{r}
 library(ggplot2)
 
@@ -458,7 +458,7 @@ Nombres_longitud <- Nombres_tidy %>%
   filter(!is.na(Nac.) & Nac. > 0) %>%
   mutate(Longitud = nchar(Nombre))
 
-# Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media.
+# Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media
 medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
   summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = 'drop')
@@ -492,7 +492,7 @@ comp_por_sexo <- Nombres_comp %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = 'drop')
 
-# Suma los totales por sexo para obtener el total de 'Ambos'
+# Suma los totales por sexo para obtener el total de "Ambos"
 comp_ambos <- comp_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientosCompuestos = sum(TotalNacimientosCompuestos, na.rm = TRUE)) %>%
@@ -521,6 +521,33 @@ grafico_evolucion(
   y_format = scales::label_number(accuracy = 0.1, suffix = " %") # Este formato muestra el eje Y como "XX.X %"
 )
 
+
+## Cantidad de nombres distintos por década y sexo
+
+# Filtra filas sin nacimientos
+Nombres_variedad <- Nombres_tidy %>%
+  filter(!is.na(Nac.) & Nac. > 0)
+
+# Calcula la cantidad de nombres distintos por década y sexo
+variedad_sexo <- Nombres_variedad %>%
+  group_by(Decada, Sexo) %>%
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = 'drop')
+
+variedad_ambos <- Nombres_variedad %>%
+  group_by(Decada) %>%
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = 'drop') %>% 
+  mutate(Sexo = "Ambos")
+
+Variedad_Nombres_Decada <- bind_rows(variedad_sexo, variedad_ambos) %>%
+  arrange(Decada, Sexo)
+
+grafico_evolucion(
+  data = Variedad_Nombres_Decada,
+  y_var = "NombresDistintos",
+  y_lab = "Nombres Distintos",
+  title = "Evolución de la Variedad de Nombres Distintos",
+  subtitle = "Por década y género (1930-2020)"
+)
 ```
 
 ```{r}
