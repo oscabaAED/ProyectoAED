@@ -393,12 +393,13 @@ Nombres_nb(1930)
 ```{r}
 library(ggplot2)
 
-# Función para los gráficos de esta sección
+# Función que genera un gráfico a partir de los datos y variables introducidos
 grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = waiver()){
   
-  # Convertimos el nombre de la columna de forma que aes() lo entienda 
+  # Convierte el nombre de la columna de forma que aes() lo pueda interpretar 
   y_sym <- sym(y_var)
   
+  # Convierte la columna "Década" en numérico para que el eje X sea continuo
   plot_data <- data %>%
     mutate(Decada = as.numeric(Decada))
   
@@ -412,9 +413,11 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
       y = y_lab,
       color = "Sexo"
     ) +
+    # Asegura que todas las décadas (1930, 1940, etc.) aparezcan en el eje X
     scale_x_continuous(breaks = seq(min(plot_data$Decada, na.rm = TRUE), 
                                     max(plot_data$Decada, na.rm = TRUE), 
                                     by = 10)) +
+    # Permite un formato personalizado para el eje Y (para usar "%")
     scale_y_continuous(labels = y_format) +
     theme(
       plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -423,15 +426,19 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
 }
 
 ## Nacimientos por década
+
+# Nacimientos totales agrupando por "Decada" y "Sexo"
 nacimientos_por_sexo <- Nombres_tidy %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientos = sum(Nac., na.rm = TRUE), .groups = 'drop')
 
+# Calcula el total de "Ambos" sumando los resultados ya calculados
 nacimientos_ambos <- nacimientos_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientos = sum(TotalNacimientos, na.rm = TRUE)) %>%
   mutate(Sexo = "Ambos")
 
+# Une los dataframes (por sexo y "Ambos") en uno solo y ordena
 Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %>%
   arrange(Decada, Sexo)
 
@@ -444,15 +451,19 @@ grafico_evolucion(
 )
 
 
-## Longitud media de nombres por sexo y década
+## Longitud media de nombres por década
+
+# Filtra filas sin nacimientos y calcula el número de carácteres de cada nombre
 Nombres_longitud <- Nombres_tidy %>%
   filter(!is.na(Nac.) & Nac. > 0) %>%
   mutate(Longitud = nchar(Nombre))
 
+# Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media.
 medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
   summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = 'drop')
 
+# Para ambos sexos se recalcula la media
 medias_ambos_sexos <- Nombres_longitud %>%
   group_by(Decada) %>%
   summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = 'drop') %>%
@@ -471,13 +482,17 @@ grafico_evolucion(
 
 
 ## Porcentaje nombres compuestos por década y sexo
+
+# Filtra solo los nombres que contienen un espacio
 Nombres_comp <- Nombres_tidy %>%
   filter(grepl(" ", Nombre), !is.na(Nac.) & Nac. > 0)
 
+# Suma los nacimientos de estos nombres compuestos, por sexo
 comp_por_sexo <- Nombres_comp %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = 'drop')
 
+# Suma los totales por sexo para obtener el total de 'Ambos'
 comp_ambos <- comp_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientosCompuestos = sum(TotalNacimientosCompuestos, na.rm = TRUE)) %>%
@@ -486,6 +501,7 @@ comp_ambos <- comp_por_sexo %>%
 Nacimientos_comp <- bind_rows(comp_por_sexo, comp_ambos) %>%
   arrange(Decada, Sexo)
 
+# Calcular el porcentaje
 Porcentaje_Comp_Decada <- Total_Nacimientos_Decada %>%
   left_join(Nacimientos_comp, by = c("Decada", "Sexo")) %>%
   mutate(
@@ -502,7 +518,7 @@ grafico_evolucion(
   y_lab = "Porcentaje de Nacimientos (%)",
   title = "Evolución del Porcentaje de Nombres Compuestos",
   subtitle = "Respecto al total de nacimientos de cada grupo (1930-2020)",
-  y_format = scales::label_number(accuracy = 0.1, suffix = " %")
+  y_format = scales::label_number(accuracy = 0.1, suffix = " %") # Este formato muestra el eje Y como "XX.X %"
 )
 
 ```
