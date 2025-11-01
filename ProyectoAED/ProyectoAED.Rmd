@@ -359,12 +359,22 @@ Nombres_tidy <- Nombres_longer %>%
 ```{r}
 library(ggplot2)
 
-# Si se aplica lo mismo pero con group_by(decadas) debería poder verse la evolución de cada nombre a lo largo del tiempo
+# Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
   filter(Decada == 2000, Sexo == "Hombre") %>% 
   select(Nombre, `Nac./1000`, Sexo) %>%
   arrange(desc(`Nac./1000`)) %>% 
   group_by(Sexo)
+
+# Evolución de un nombre a lo largo del tiempo
+Nombre_evol <- Nombres_tidy %>%
+  filter(Nombre == str_to_upper("Marc")) %>% 
+  select(Nombre, Decada, `Nac./1000`, Sexo) %>%
+  arrange(Decada) %>% 
+  group_by(Decada)
+
+print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc 
+
 
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(decada){
@@ -379,7 +389,52 @@ Nombres_nb <- function(decada){
 
 # No parece dividirse por décadas
 Nombres_nb(1930)
+```
 
+
+```{r}
+## Nacimientos por década
+nacimientos_por_sexo <- Nombres_tidy %>%
+  group_by(Decada, Sexo) %>%
+  summarise(
+    TotalNacimientos = sum(Nac., na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+nacimientos_ambos <- Nombres_tidy %>%
+  group_by(Decada) %>%
+  summarise(
+    TotalNacimientos = sum(Nac., na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(Sexo = "Ambos")
+
+Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %>%
+  arrange(Decada, Sexo)
+
+plot_nacimientos <- Total_Nacimientos_Decada %>%
+  mutate(Decada = as.numeric(Decada))
+
+ggplot(plot_nacimientos, aes(x = Decada, y = TotalNacimientos, color = Sexo, group = Sexo)) + geom_line() + geom_point() + 
+  labs(
+    title = "Evolución del Número Total de Nacimientos",
+    subtitle = "Por década y género (1930-2020)",
+    x = "Década",
+    y = "Número Total de Nacimientos",
+    color = "Sexo"
+  ) +
+  # Forzar que todas las décadas aparezcan en el eje X
+  scale_x_continuous(breaks = seq(min(plot_longitud$Decada, na.rm = TRUE), 
+                                  max(plot_longitud$Decada, na.rm = TRUE), 
+                                  by = 10)) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+
+
+## Longitud media de nombres por sexo y década
 # Longitud de cada nombre
 Nombres_longitud <- Nombres_tidy %>%
   filter(!is.na(Nac.) & Nac. > 0) %>%
@@ -391,7 +446,7 @@ medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
   summarise(
     LongitudMedia = weighted.mean(Longitud, w = Nac.),
-    .groups = 'drop' # Desagrupar después de sumarizar
+    .groups = 'drop'
   )
 
 # Longitud media ponderada por década (ambos sexos)
@@ -409,7 +464,6 @@ Longitud_media_comb <- bind_rows(medias_por_sexo, medias_ambos_sexos) %>%
 
 plot_longitud <- Longitud_media_comb %>% 
   mutate(Decada = as.numeric(Decada))
-print(plot_longitud)
 
 ggplot(plot_longitud, aes(x = Decada, y = LongitudMedia, color = Sexo, group = Sexo)) + geom_line() + geom_point() + 
   labs(
@@ -427,6 +481,70 @@ ggplot(plot_longitud, aes(x = Decada, y = LongitudMedia, color = Sexo, group = S
     plot.title = element_text(hjust = 0.5, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5)
   )
+
+
+
+
+## Porcentaje nombres compuestos por década y sexo
+Nombres_comp <- Nombres_tidy %>%
+  filter(grepl(" ", Nombre), !is.na(Nac.) & Nac. > 0)
+
+# Nacimientos con nombre compuesto por década y sexo
+comp_por_sexo <- Nombres_comp %>%
+  group_by(Decada, Sexo) %>%
+  summarise(
+    TotalCompuestos = sum(Nac., na.rm = T),
+    .groups = 'drop' 
+  )
+
+# Nacimientos con nombre compuesto por década (ambos sexos)
+comp_ambos <- Nombres_comp %>%
+  group_by(Decada) %>%
+  summarise(
+    TotalCompuestos = sum(Nac., na.rm = T),
+    .groups = 'drop'
+  ) %>% 
+  mutate(Sexo = "Ambos")
+
+# Union de ambos df
+Nacimientos_comp <- bind_rows(comp_por_sexo, comp_ambos) %>%
+  arrange(Decada, Sexo) 
+
+
+
+Porcentaje_Comp_Decada <- Total_Nacimientos_Decada %>%
+  left_join(
+    Nacimientos_comp,
+    by = c("Decada", "Sexo") # Claves de unión
+  ) %>%
+  mutate(
+    TotalCompuestos = replace_na(TotalCompuestos, 0)
+  ) %>%
+  mutate(
+    PorcentajeCompuestos = (TotalCompuestos / TotalNacimientos) * 100
+  ) %>%
+  select(Decada, Sexo, PorcentajeCompuestos)
+
+plot_porc_comp <- Porcentaje_Comp_Decada %>% 
+  mutate(Decada = as.numeric(Decada))
+
+ggplot(plot_porc_comp, aes(x = Decada, y = PorcentajeCompuestos, color = Sexo, group = Sexo)) + geom_line() + geom_point() + 
+  labs(
+    title = "Evolución del Porcentaje de Nombres Compuestos",
+    subtitle = "Respecto al total de nacimientos de cada grupo (1930-2020)",
+    x = "Década",
+    y = "Porcentaje de Nacimientos (%)",
+    color = "Sexo"
+  ) +
+  # Forzar que todas las décadas aparezcan en el eje X
+  scale_x_continuous(breaks = seq(min(plot_comp$Decada, na.rm = TRUE), 
+                                  max(plot_comp$Decada, na.rm = TRUE), 
+                                  by = 10)) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
 ```
 
 ```{r}
