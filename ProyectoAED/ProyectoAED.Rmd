@@ -417,17 +417,15 @@ ggplot(plot_longitud, aes(x = Decada, y = LongitudMedia, color = Sexo, group = S
     subtitle = "Ponderada por el número de nacimientos (1930-2020)",
     x = "Década",
     y = "Longitud Media del Nombre",
-    color = "Grupo" # Etiqueta para la leyenda
+    color = "Sexo"
   ) +
-  # Asegurar que todas las décadas aparezcan en el eje X
+  # Forzar que todas las décadas aparezcan en el eje X
   scale_x_continuous(breaks = seq(min(plot_longitud$Decada, na.rm = TRUE), 
                                   max(plot_longitud$Decada, na.rm = TRUE), 
-                                  by = 10)) +
-  theme_minimal() + # Un tema limpio
+                                  by = 10)) + 
   theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"), # Centrar título
-    plot.subtitle = element_text(hjust = 0.5), # Centrar subtítulo
-    legend.position = "bottom" # Poner la leyenda abajo
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5)
   )
 ```
 
