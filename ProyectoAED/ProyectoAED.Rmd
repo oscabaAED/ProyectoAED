@@ -629,12 +629,107 @@ Nom_populares <- Nombres_tidy %>%
 print(Nom_populares)
 
 #Gráficos para ver los 10 nombres más comunes por año (5 mujeres y 5 hombres)
+#1930
 df_1930 <- Nom_populares %>%
   filter(Decada == '1930')
-g1930<-ggplot(data=df_1930, aes(x=reorder(Nombre, Nac.), y=Nac.)) + geom_col(aes(fill = Sexo)) + facet_grid(~ Sexo, scales = "free_x") + xlab('Nombres') + ylab('Número de Nacimientos') + ggtitle('5 Nombres más populares en 1930 en la provincia de Valencia') + theme(axis.text.x = element_text(angle=45, hjust = 1))
+g1930<-ggplot(data=df_1930, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1930 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
 g1930
-```
 
+#1940
+df_1940 <- Nom_populares %>%
+  filter(Decada == '1940')
+g1940<-ggplot(data=df_1940, aes(x=reorder(Nombre, Nac.), y=Nac.)) + geom_col(aes(fill = Sexo)) + geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + facet_grid(~ Sexo, scales = "free_x") + labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1940 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1940
+
+#1950
+df_1950 <- Nom_populares %>%
+  filter(Decada == '1950')
+g1950<-ggplot(data=df_1950, aes(x=reorder(Nombre, Nac.), y=Nac.)) + geom_col(aes(fill = Sexo)) + geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + facet_grid(~ Sexo, scales = "free_x") + labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1950 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1950
+
+#1960
+df_1960 <- Nom_populares %>%
+  filter(Decada == '1960')
+g1960<-ggplot(data=df_1930, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1960 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1960
+
+#1970
+df_1970 <- Nom_populares %>%
+  filter(Decada == '1970')
+g1970<-ggplot(data=df_1970, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1970 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1970
+
+#1980
+df_1980 <- Nom_populares %>%
+  filter(Decada == '1980')
+g1980<-ggplot(data=df_1980, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1980 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1980
+
+#1990
+df_1990 <- Nom_populares %>%
+  filter(Decada == '1990')
+g1990<-ggplot(data=df_1990, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 1990 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g1990
+
+#2000
+df_2000 <- Nom_populares %>%
+  filter(Decada == '1980')
+g2000<-ggplot(data=df_2000, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 2000 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g2000
+
+#2010
+df_2010 <- Nom_populares %>%
+  filter(Decada == '2010')
+g2010<-ggplot(data=df_2010, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 2010 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g2010
+
+#2020
+df_2020 <- Nom_populares %>%
+  filter(Decada == '2020')
+g2020<-ggplot(data=df_2020, aes(x=reorder(Nombre, Nac.), y=Nac.)) + 
+  geom_col(aes(fill = Sexo)) + 
+  geom_text(aes(label = Nac.), vjust = -0.5,size = 2.5) + 
+  facet_grid(~ Sexo, scales = "free_x") + 
+  labs(title = 'Top 5 nombres más populares por sexo', subtitle= 'Decada de 2020 en la Provincia de Valencia', x=NULL, y= 'Numero de nacimientos') + 
+  theme_light() + theme(axis.text.x = element_text(angle=45, hjust = 1), plot.title = element_text(face = "bold", hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+g2020
+```
+Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religioso, pero a partir de 1990 esta tendencia decrece.
 
 # Introduction
 
