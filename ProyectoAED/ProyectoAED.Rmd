@@ -1,11 +1,9 @@
 ---
-title: Full title of the paper (Capitalized)
+title: Frecuencias de nombres de la Comunidad Valenciana a lo largo de las decadas
 author:
-  - name: Dominik Leutnant
-    affil: 1,2,\ddagger,*
-    orcid: 0000-0003-3293-2315
-  - name: John Doe
-    affil: 2, \dagger, \ddagger
+  - name: Óscar Camacho Barreda
+  - name: Florencia Pellegrini
+  - name: Lucía Benages Guijarro
 affiliation:
   - num: 1
     address: |
@@ -375,9 +373,19 @@ print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencia
 
 
 # Función para ver qué nombres aparecen en ambos sexos
-Nombres_nb <- function(decada){
+Nombres_nb <- function(){
+  Nombres_tidy %>%
+    distinct(Nombre, Sexo) %>% 
+    group_by(Nombre) %>% 
+    filter(n() == 2) %>% 
+    pull(Nombre) %>% 
+    unique()
+}
+# Función para ver qué nombres aparecen en ambos sexos por década
+Nombres_nb_decada <- function(decada){
   Nombres_tidy %>%
     filter(Decada == decada) %>%
+    drop_na() %>%
     distinct(Nombre, Sexo) %>% 
     group_by(Nombre) %>% 
     filter(n() == 2) %>% 
@@ -386,7 +394,25 @@ Nombres_nb <- function(decada){
 }
 
 # No parece dividirse por décadas
-Nombres_nb(1930)
+# No se divide por décadas porque todos los nombres aparecen, solo que en algunas décadas con NA, 
+# creo que lo puedo arreglar, pero dejaré la opción para todas las décadas también
+unisex <- Nombres_nb() # Opción para todas las décadas
+Nombres_nb_decada(1930)
+Nombres_nb_decada(2000)
+# Los nombres unisex son un porcentaje muy bajo del total
+length(Nombres_nb())/length(unique(Nombres_tidy$Nombre))
+
+# Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
+cada_sexo_nb <- Nombres_tidy %>%
+  filter(Nombre %in% unisex) %>%
+  group_by(Nombre, Sexo) %>%
+  summarise(Total=sum(Nac., na.rm = TRUE)) %>%
+  pivot_wider(names_from = Sexo, values_from = Total) %>%
+  group_by(Nombre) %>%
+  summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
+
+cada_sexo_nb
+# Por lo general la mayoría de los nombres unisex tienden bastante hacia uno de los dos sexos
 ```
 
 # Gráficos tendencias nombres
@@ -730,6 +756,24 @@ g2020<-ggplot(data=df_2020, aes(x=reorder(Nombre, Nac.), y=Nac.)) +
 g2020
 ```
 Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religioso, pero a partir de 1990 esta tendencia decrece.
+
+
+```{r}
+# Dada una lista de nombres y su sexo ordenarlos por mayor número de nacimientos desde 1930 y encontrar su década de máxima popularidad
+# Los he seleccionado de manera aleatoria por el momento
+nombres <- sample_n(Nombres_tidy, 10)[,c('Nombre','Sexo')]
+
+Ranking <- Nombres_tidy %>%
+  semi_join(nombres, by=c('Nombre','Sexo')) %>% # Conseguir el dataframe de los nombres elegidos
+  group_by(Nombre, Sexo) %>%
+  summarise(`Nacidos desde 1930`=sum(Nac., na.rm = TRUE), MaximaFreq=max(`Nac./1000`, na.rm = TRUE)) %>%
+  left_join(Nombres_tidy, by = c("MaximaFreq" = "Nac./1000", "Nombre", "Sexo")) %>%
+  rename(`Década de máxima frecuencia`=Decada) %>%
+  select(Nombre, Sexo, `Nacidos desde 1930`, `Década de máxima frecuencia`) %>% 
+  arrange(desc(`Nacidos desde 1930`))
+
+Ranking
+```
 
 # Introduction
 
