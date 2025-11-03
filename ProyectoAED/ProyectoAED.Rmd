@@ -761,13 +761,15 @@ Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres relig
 library(tidyverse)
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
 #Como sabemos que en la variable sexo las 2 categorias estan en proporción 50-50 y en la variable decada las categorias estan en proporción 0.1, obviamos este estudio y nos concentramos en los nombres. 
+
 # Frecuencia de la variable 'Nombre'
-Frecuencia_nombres <- Nom_populares %>%
+#A partir del dataframe tidy, agrupo por nombre y sumo la cantidad de nacimientos totales. Luego para hacer la proporción, debo desagrupar. Finalmente ordeno acorde al conteo de personas con ese nombre.
+Frecuencia_nombres <- Nombres_tidy %>%
   group_by(Nombre) %>%
-  summarise(Conteo = n()) %>%
-  mutate(Proporcion = Conteo / sum(Conteo)) %>% 
-  arrange(desc(Conteo))
-Frecuencia_nombres
+  summarise(Nacimientos_Totales = sum(Nac., na.rm = TRUE))  %>% #Sumo los nacimientos
+  ungroup() %>%
+  mutate(Proporcion = Nacimientos_Totales / sum(Nacimientos_Totales)) %>% #Proporción
+  arrange(desc(Nacimientos_Totales))  
 ```
 
 
