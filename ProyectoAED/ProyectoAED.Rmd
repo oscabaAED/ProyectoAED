@@ -513,3 +513,15 @@ Ranking <- Nombres_tidy %>%
 
 Ranking
 ```
+```{r}
+#Ranking nombres de clase 
+
+nombres_clase <- toupper(c("Adrian", "Adriana", "Alvaro", "Ana", "Axel", "Azahara", "Carlos", "Clara", "Cristhian", "Fabian", "Florencia", "Hector", "Irene", "Iyán", "Javier", "Jeremy", "Joan", "Jose", "Juan", "Lucia",  "María de los Ángeles", "Mario", "Oscar", "Pablo", "Pol", "An"))
+
+ranking_nombres_clase <- Nombres_tidy %>%
+  filter(Decada == '2020', # solo 2020
+         Nombre %in% nombres_clase) %>% 
+  select(Decada, Nombre, Nac.) %>%
+  arrange(desc(Nac.)) %>%
+ranking_nombres_clase
+```
