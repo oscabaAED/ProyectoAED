@@ -524,4 +524,15 @@ ranking_nombres_clase <- Nombres_tidy %>%
   select(Decada, Nombre, Nac.) %>%
   arrange(desc(Nac.)) 
 ranking_nombres_clase
+
+# Gráfico del ranking de la clase - BORRAR, ERA POR VER COMO QUEDABA
+ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = Nombre), vjust = -0.5, size = 1.5) +
+  labs(title = "Ranking de Nombres de la Clase en la Década de 2000",
+       x = NULL,
+       y = "Número de Nacimientos") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_blank(),
+    axis.ticks.x = element_blank())
 ```
