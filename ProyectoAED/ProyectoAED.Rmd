@@ -1,5 +1,5 @@
 ---
-title: Frecuencias de nombres de la Comunidad Valenciana a lo largo de las decadas 1930 a 2020
+title: Frecuencias de nombres de la provincia de Valencia a lo largo de las decadas de 1930 a 2020
 author:
   - name: Óscar Camacho Barreda
   - name: Florencia Pellegrini
@@ -40,12 +40,13 @@ Para este estudio, hemos seleccionado los datos correspondientes a la província
 También hemos de tener en cuenta que los datos para la frecuencia de un determinado nombre tan solo son públicos si la frecuencia de este nombre es superior a 5 por província y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos.
 
 ## Cargar librerías a utilizar
-```{r}
+```{r echo = FALSE}
 library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunque se tengan que instalar
 
 p_load(stringr) # Manipulación de datos de tipo texto
 p_load(tidyr, dplyr) # Manejado de datos
 p_load(ggplot2) # Visualización
+p_load(patchwork) # Agrupación de plots
 ```
 
 
@@ -53,7 +54,7 @@ p_load(ggplot2) # Visualización
 
 Cargaremos los datos de diversos ficheros csv diferentes, y los uniremos directamente juntando las diversas columnas que aparecen (por nombre), el dataframe resultante de esta operación se habrá de alterar más adelante para que sea más adecuado para trabajar con los datos.
 
-```{r}
+```{r echo = FALSE}
 # ESTO EN TEORÍA FUNCIONA, para leerlos todos
 
 variables <- c('Nombre', 'Nac.', 'Nac./1000')
@@ -63,12 +64,8 @@ ficheros <- grep('nombres.*[.]csv',ficheros, value=T)
 # Esto recoge la parte numérica al final del fichero que es donde están las últimas dos cifras de la década
 decadas <- gsub("[.]csv","",str_extract(list.files('../data'),'[a-z0-9\\-]+[.]csv'))
 
-# Elimina los menores de 30 y convierte los números a década completa
+# Convierte los números a década completa
 decadas <- sapply(decadas, function(x) {
-  # Si es menor30, se descarta devolviendo NA
-  if (grepl("menor30", x, ignore.case = TRUE)) {
-    return(NA)
-  }
   # Si es 30-39 lo pasamos a 1930
   if (grepl("30-39", x)) {
     return("1930")
@@ -140,7 +137,7 @@ load('../data/NombresSucio.RData')
 
 ## Convertir el dataframe a formato tidy
 
-```{r}
+```{r echo = FALSE}
 # Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
 Nombres_longer <- Nombres %>%
   relocate(`Nac._2000`:`Nac./1000_2020`, .after = `Nac./1000_1990`) %>%  # Reordenamos primero las columnas de 1930 a 2020
@@ -154,7 +151,7 @@ Nombres_tidy <- Nombres_longer %>%
 
 
 # Análisis univariante
-```{r}
+```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
 #Como sabemos que en la variable sexo las 2 categorias estan en proporción 50-50 y en la variable decada las categorias estan en proporción 0.1, obviamos este estudio y nos concentramos en los nombres. 
 
@@ -169,7 +166,7 @@ Frecuencia_nombres <- Nombres_tidy %>%
 ```
 
 # Pruebas de evoluciones temporales
-```{r}
+```{r echo = FALSE}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
   filter(Decada == 2000, Sexo == "Hombre") %>% 
@@ -179,7 +176,7 @@ Decada_2000 <- Nombres_tidy %>%
 
 # Evolución de un nombre a lo largo del tiempo
 Nombre_evol <- Nombres_tidy %>%
-  filter(Nombre == str_to_upper("Pau")) %>% 
+  filter(Nombre == str_to_upper("Marc")) %>% 
   select(Nombre, Decada, `Nac./1000`, Sexo) %>%
   arrange(Decada) %>% 
   group_by(Decada)
@@ -231,7 +228,7 @@ cada_sexo_nb
 ```
 
 # Gráficos tendencias nombres
-```{r}
+```{r echo = FALSE}
 
 # Función que genera un gráfico a partir de los datos y variables introducidos
 grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = waiver()){
@@ -460,7 +457,7 @@ grafico_evolucion(
 ```
 
 ## Análisis bivariante
-```{r}
+```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
 Nom_populares <- Nombres_tidy %>%
   group_by(Sexo, Decada) %>%
@@ -497,7 +494,7 @@ for (df_decada in lista_df_decadas) {
 ```
 Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religioso, pero a partir de 1990 esta tendencia decrece.
 
-```{r}
+```{r echo = FALSE}
 # Dada una lista de nombres y su sexo ordenarlos por mayor número de nacimientos desde 1930 y encontrar su década de máxima popularidad
 # Los he seleccionado de manera aleatoria por el momento
 nombres <- sample_n(Nombres_tidy, 10)[,c('Nombre','Sexo')]
@@ -513,7 +510,8 @@ Ranking <- Nombres_tidy %>%
 
 Ranking
 ```
-```{r}
+
+```{r echo = FALSE}
 #Ranking nombres de clase 
 
 nombres_clase <- toupper(c("Adrian", "Adriana", "Alvaro", "Ana", "Axel", "Azahara", "Carlos", "Clara", "Cristhian", "Fabian", "Florencia", "Hector", "Irene", "Iyán", "Javier", "Jeremy", "Joan", "Jose", "Juan", "Lucia",  "María de los Ángeles", "Mario", "Oscar", "Pablo", "Pol", "An"))
