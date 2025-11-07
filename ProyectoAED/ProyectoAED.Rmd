@@ -166,6 +166,7 @@ Frecuencia_nombres <- Nombres_tidy %>%
   ungroup() %>%
   mutate(Proporcion = Nacimientos_Totales / sum(Nacimientos_Totales)) %>% #Proporción
   arrange(desc(Nacimientos_Totales))  
+Frecuencia_nombres
 ```
 
 # Pruebas de evoluciones temporales
