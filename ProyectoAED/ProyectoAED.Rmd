@@ -181,7 +181,7 @@ Nombre_evol <- Nombres_tidy %>%
   arrange(Decada) %>% 
   group_by(Decada)
 
-print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc 
+#print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc 
 
 
 # Función para ver qué nombres aparecen en ambos sexos
@@ -209,8 +209,7 @@ Nombres_nb_decada <- function(decada){
 # No se divide por décadas porque todos los nombres aparecen, solo que en algunas décadas con NA, 
 # creo que lo puedo arreglar, pero dejaré la opción para todas las décadas también
 unisex <- Nombres_nb() # Opción para todas las décadas
-Nombres_nb_decada(1930)
-Nombres_nb_decada(2000)
+
 # Los nombres unisex son un porcentaje muy bajo del total
 length(Nombres_nb())/length(unique(Nombres_tidy$Nombre))
 
@@ -229,8 +228,7 @@ cada_sexo_nb
 
 # Gráficos tendencias nombres
 ```{r echo = FALSE}
-
-# Función que genera un gráfico a partir de los datos y variables introducidos
+# Generamos un gráfico a partir de los datos y variables introducidos
 grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = waiver()){
   
   # Convierte el nombre de la columna de forma que aes() lo pueda interpretar 
@@ -240,7 +238,8 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
   plot_data <- data %>%
     mutate(Decada = as.numeric(Decada))
   
-  ggplot(plot_data, aes(x = Decada, y = !!y_sym, color = Sexo, group = Sexo)) + ##!!y_sym usa la columna correspondiente a y_var
+  #!!y_sym usa la columna correspondiente a y_var
+  ggplot(plot_data, aes(x = Decada, y = !!y_sym, color = Sexo, group = Sexo)) + 
     geom_line(linewidth = 1) +
     geom_point(size = 2.5) +
     labs(
@@ -262,6 +261,11 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
     )
 }
 
+# Dataframe base con NAs filtrados
+Nombres_validos <- Nombres_tidy %>%
+  filter(!is.na(Nac.) & Nac. > 0) %>%
+  mutate(Decada_num = as.numeric(Decada))
+
 ## Nacimientos por década
 
 # Nacimientos totales agrupando por "Decada" y "Sexo"
@@ -269,17 +273,17 @@ nacimientos_por_sexo <- Nombres_tidy %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
-# Calcula el total de "Ambos" sumando los resultados ya calculados
+# Calculamos el total de "Ambos" sumando los resultados anteriores
 nacimientos_ambos <- nacimientos_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientos = sum(TotalNacimientos, na.rm = TRUE)) %>%
   mutate(Sexo = "Ambos")
 
-# Une los dataframes (por sexo y "Ambos") en uno solo y ordena
+# Unimos los dataframes (por sexo y "Ambos") en uno solo y los ordenamos
 Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_nacimientos <- grafico_evolucion(
   data = Total_Nacimientos_Decada,
   y_var = "TotalNacimientos",
   y_lab = "Número Total de Nacimientos",
@@ -290,12 +294,11 @@ grafico_evolucion(
 
 ## Longitud media de nombres por década
 
-# Filtra filas sin nacimientos y calcula el número de carácteres de cada nombre
-Nombres_longitud <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0) %>%
+# Calculamos el número de carácteres de cada nombre
+Nombres_longitud <- Nombres_validos %>%
   mutate(Longitud = nchar(Nombre))
 
-# Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media
+# Calculamos la media ponderada por sexo. # Nombres más comunes tienen mayor peso en la media
 medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
   summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = "drop")
@@ -309,7 +312,7 @@ medias_ambos_sexos <- Nombres_longitud %>%
 Longitud_media_comb <- bind_rows(medias_por_sexo, medias_ambos_sexos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_longitud <- grafico_evolucion(
   data = Longitud_media_comb,
   y_var = "LongitudMedia",
   y_lab = "Longitud Media del Nombre",
@@ -320,16 +323,16 @@ grafico_evolucion(
 
 ## Porcentaje nombres compuestos por década y sexo
 
-# Filtra solo los nombres que contienen un espacio
-Nombres_comp <- Nombres_tidy %>%
-  filter(grepl(" ", Nombre), !is.na(Nac.) & Nac. > 0)
+# Filtramos solo los nombres que contienen un espacio
+Nombres_comp <- Nombres_validos %>%
+  filter(grepl(" ", Nombre))
 
-# Suma los nacimientos de estos nombres compuestos, por sexo
+# Sumamos los nacimientos de estos nombres compuestos, por sexo
 comp_por_sexo <- Nombres_comp %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
-# Suma los totales por sexo para obtener el total de "Ambos"
+# Sumamos los totales por sexo para obtener el total de "Ambos"
 comp_ambos <- comp_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientosCompuestos = sum(TotalNacimientosCompuestos, na.rm = TRUE)) %>%
@@ -338,18 +341,18 @@ comp_ambos <- comp_por_sexo %>%
 Nacimientos_comp <- bind_rows(comp_por_sexo, comp_ambos) %>%
   arrange(Decada, Sexo)
 
-# Calcular el porcentaje
+# Calculamos el porcentaje
 Porcentaje_Comp_Decada <- Total_Nacimientos_Decada %>%
   left_join(Nacimientos_comp, by = c("Decada", "Sexo")) %>%
   mutate(
     TotalNacimientosCompuestos = replace_na(TotalNacimientosCompuestos, 0)
-  ) %>%
+    ) %>%
   mutate(
     PorcentajeCompuestos = (TotalNacimientosCompuestos / TotalNacimientos) * 100
-  ) %>%
+    ) %>%
   select(Decada, Sexo, PorcentajeCompuestos)
 
-grafico_evolucion(
+plot_compuestos <- grafico_evolucion(
   data = Porcentaje_Comp_Decada,
   y_var = "PorcentajeCompuestos",
   y_lab = "Porcentaje de Nacimientos (%)",
@@ -361,24 +364,20 @@ grafico_evolucion(
 
 ## Cantidad de nombres distintos por década y sexo
 
-# Filtra filas sin nacimientos
-Nombres_variedad <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0)
-
-# Calcula la cantidad de nombres distintos por década y sexo
-variedad_sexo <- Nombres_variedad %>%
+# Calculamos la cantidad de nombres distintos por década y sexo
+variedad_sexo <- Nombres_validos %>%
   group_by(Decada, Sexo) %>%
   summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop")
 
-variedad_ambos <- Nombres_variedad %>%
+variedad_ambos <- Nombres_validos %>%
   group_by(Decada) %>%
-  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop") %>% 
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop") %>%
   mutate(Sexo = "Ambos")
 
 Variedad_Nombres_Decada <- bind_rows(variedad_sexo, variedad_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_variedad <- grafico_evolucion(
   data = Variedad_Nombres_Decada,
   y_var = "NombresDistintos",
   y_lab = "Nombres Distintos",
@@ -389,30 +388,23 @@ grafico_evolucion(
 
 ## Nuevos nombres por década y sexo
 
-Nombres_nuevos_decada <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0)
-
-Nombres_unicos_decada <- Nombres_nuevos_decada %>%
-  group_by(Decada, Sexo, Nombre) %>%
-  mutate(Decada = as.numeric(Decada))
-
-Nombres_primera_aparicion <- Nombres_unicos_decada %>%
+Nombres_primera_aparicion <- Nombres_validos %>%
   group_by(Nombre, Sexo) %>%
-  summarise(PrimeraDecada = min(Decada, na.rm = T), .groups = "drop")
+  summarise(PrimeraDecada = min(Decada_num, na.rm = T), .groups = "drop")
 
-nuevos_nombres_decada <- Nombres_primera_aparicion %>% 
-  group_by(Decada = as.character(PrimeraDecada), Sexo) %>% 
+nuevos_nombres_decada <- Nombres_primera_aparicion %>%
+  group_by(Decada = as.character(PrimeraDecada), Sexo) %>%
   summarise(NuevosNombres = n(), .groups = "drop")
 
-nuevos_nombres_ambos <- nuevos_nombres_decada %>% 
-  group_by(Decada) %>% 
-  summarise(NuevosNombres = sum(NuevosNombres, na.rm = T), .groups = "drop") %>% 
+nuevos_nombres_ambos <- nuevos_nombres_decada %>%
+  group_by(Decada) %>%
+  summarise(NuevosNombres = sum(NuevosNombres, na.rm = T), .groups = "drop") %>%
   mutate(Sexo = "Ambos")
 
 Nombres_Nuevos <- bind_rows(nuevos_nombres_decada, nuevos_nombres_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_novedad <- grafico_evolucion(
   data = Nombres_Nuevos,
   y_var = "NuevosNombres",
   y_lab = "Nombres Nuevos",
@@ -423,13 +415,12 @@ grafico_evolucion(
 
 ## Número de nombres desaparecidos con el tiempo
 
-# Utilizamos el df del caso anterior para ver la última aparición de cada nombre
-Nombres_ultima_aparicion <- Nombres_unicos_decada %>%
+Nombres_ultima_aparicion <- Nombres_validos %>%
   group_by(Nombre, Sexo) %>%
-  summarise(UltimaDecada = max(Decada, na.rm = TRUE), .groups = "drop")
+  summarise(UltimaDecada = max(Decada_num, na.rm = TRUE), .groups = "drop")
 
 # Excluimos 2020 porque es la última década que tenemos disponible
-max_decada_total <- max(Nombres_unicos_decada$Decada, na.rm = TRUE)
+max_decada_total <- max(Nombres_validos$Decada_num, na.rm = TRUE)
 
 Nombres_desaparecidos <- Nombres_ultima_aparicion %>%
   filter(UltimaDecada < max_decada_total)
@@ -446,7 +437,7 @@ desaparecidos_ambos <- desaparecidos_por_sexo %>%
 Total_Nombres_Desaparecidos <- bind_rows(desaparecidos_por_sexo, desaparecidos_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_desaparicion <- grafico_evolucion(
   data = Total_Nombres_Desaparecidos,
   y_var = "NombresDesaparecidos",
   y_lab = "Número de Nombres Desaparecidos",
@@ -454,6 +445,9 @@ grafico_evolucion(
   subtitle = "Nombres vistos por última vez en esa década (y que no reaparecen)",
 )
 
+plot_nacimientos / plot_variedad 
+plot_compuestos / plot_longitud 
+plot_novedad / plot_desaparicion
 ```
 
 ## Análisis bivariante
