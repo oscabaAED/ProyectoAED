@@ -16,10 +16,8 @@ abstract: |
   A single paragraph of about 200 words maximum...
   
 abbreviations:
-  - short: MDPI
-    long: Multidisciplinary Digital Publishing Institute
-  - short: DOAJ
-    long: Directory of open access journals
+  - short: Nac
+    long: Nacimientos
 
 bibliography: mybibfile.bib
 appendix: false
@@ -284,7 +282,7 @@ Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %
   arrange(Decada, Sexo)
 
 plot_nacimientos <- grafico_evolucion(
-  data = Total_Nacimientos_Decada,
+  data = Total_Nacimientos_Decada %>% filter(Decada != "2020"),
   y_var = "TotalNacimientos",
   y_lab = "Número Total de Nacimientos",
   title = "Evolución del Número Total de Nacimientos",
@@ -378,7 +376,7 @@ Variedad_Nombres_Decada <- bind_rows(variedad_sexo, variedad_ambos) %>%
   arrange(Decada, Sexo)
 
 plot_variedad <- grafico_evolucion(
-  data = Variedad_Nombres_Decada,
+  data = Variedad_Nombres_Decada %>% filter(Decada != "2020"),
   y_var = "NombresDistintos",
   y_lab = "Nombres Distintos",
   title = "Evolución de la Variedad de Nombres Distintos",
@@ -405,7 +403,7 @@ Nombres_Nuevos <- bind_rows(nuevos_nombres_decada, nuevos_nombres_ambos) %>%
   arrange(Decada, Sexo)
 
 plot_novedad <- grafico_evolucion(
-  data = Nombres_Nuevos,
+  data = Nombres_Nuevos %>% filter(Decada != "2020"),
   y_var = "NuevosNombres",
   y_lab = "Nombres Nuevos",
   title = "Cantidad de Nombres Nuevos",
