@@ -16,7 +16,7 @@ abstract: |
   A single paragraph of about 200 words maximum...
   
 abbreviations:
-  - short: Nac
+  - short: Nac.
     long: Nacimientos
 
 bibliography: mybibfile.bib
@@ -30,15 +30,14 @@ output:
 
 # Introducción
 
-El objetivo principal de este proyecto es familiarizarse con técnicas básicas de análisis exploratorio de datos  (como la manipulación de estos y su visualización) de manera práctica, escogiendo un conjunto disponible y realizando sobre él el estudio que resulte apropiado.  
+El presente proyecto tiene como objetivo principal la aplicación práctica de técnicas de Análisis Exploratorio de Datos. A través de la manipulación, limpieza y visualización de un conjunto de datos demográficos, se busca identificar patrones socioculturales reflejados en las tendencias de elección de nombres a lo largo de casi un siglo.
 
-Hemos escogido trabajar con datos acerca de la frecuencia de nombres por província y década procedentes del Instituto Nacional de Estadística. Estos datos se encuentran libremente disponibles y se pueden consultar en la siguiente dirección: <https://www.ine.es/tnombres/formGeneralresult.do?vista=3#_TabConsulta>.  
+La fuente de datos seleccionada proviene del Instituto Nacional de Estadística (INE). Específicamente, se ha trabajado con los registros de frecuencia de nombres de recién nacidos para la provincia de Valencia, abarcando las décadas comprendidas entre 1930 y 2020. Estos datos se encuentran libremente disponibles y se pueden consultar en la siguiente dirección: <https://www.ine.es/tnombres/formGeneralresult.do?vista=3#_TabConsulta>.
 
-Para este estudio, hemos seleccionado los datos correspondientes a la província de Valencia para las décadas desde 1930 a 2020. Cabe destacar que los datos proceden del Censo anual de población a fecha 01/01/2024, por lo que la década de 2020 se encuentra incompleta y desactualizada desde ese momento.  
-También hemos de tener en cuenta que los datos para la frecuencia de un determinado nombre tan solo son públicos si la frecuencia de este nombre es superior a 5 por província y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos.
+Cabe destacar que los datos proceden del censo anual de población a fecha 01/01/2024, por lo que la década de 2020 se encuentra incompleta y sus cifras son parciales. También se ha de tener en cuenta que la frecuencia de un determinado nombre tan solo se publica si es superior o igual a 5 por provincia y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos. Además, los datos originales se encuentran segmentados en múltiples archivos, separados por género y década, lo que requerirá una etapa previa de integración.
 
 ## Cargar librerías a utilizar
-```{r echo = FALSE}
+```{r }
 library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunque se tengan que instalar
 
 p_load(stringr) # Manipulación de datos de tipo texto
@@ -50,7 +49,18 @@ p_load(patchwork) # Agrupación de plots
 
 ## Importación inicial de los datos
 
-Cargaremos los datos de diversos ficheros csv diferentes, y los uniremos directamente juntando las diversas columnas que aparecen (por nombre), el dataframe resultante de esta operación se habrá de alterar más adelante para que sea más adecuado para trabajar con los datos.
+Para gestionar la información dispersa en múltiples archivos, es necesario leer cada fichero .csv individualmente. De sus nombres de archivo se extrae información clave, como la década y el sexo al que corresponden los registros.
+
+Originalmente, cada archivo cuenta con tres variables:
+
+- Nombre: Nombre propio registrado.
+
+- Total: Número total de nacimientos con ese nombre en esa década específica (frecuencia absoluta).
+
+- Por mil: Frecuencia relativa del nombre por cada mil nacimientos.
+
+Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (Nombres) utilizando la columna "Nombre" como clave común. Este dataframe resultante se transforma posteriormente a formato tidy para facilitar su manipulación y análisis gráfico.
+
 
 ```{r echo = FALSE}
 # ESTO EN TEORÍA FUNCIONA, para leerlos todos
@@ -135,6 +145,7 @@ load('../data/NombresSucio.RData')
 
 ## Convertir el dataframe a formato tidy
 
+Dado que el dataframe Nombres contiene dos columnas separadas por cada década, se procede a su reestructuración utilizando funciones de tidyr y dplyr. Esta conversión a formato largo permite condensar estas múltiples columnas, quedando variables más claras: Nombre, Sexo, Década, Nac. y Nac./1000.
 ```{r echo = FALSE}
 # Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
 Nombres_longer <- Nombres %>%
@@ -147,8 +158,9 @@ Nombres_tidy <- Nombres_longer %>%
   pivot_wider(names_from = "Tipo", values_from = "Valor")
 ```
 
+# Análisis
 
-# Análisis univariante
+## Análisis univariante
 ```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
 #Como sabemos que en la variable sexo las 2 categorias estan en proporción 50-50 y en la variable decada las categorias estan en proporción 0.1, obviamos este estudio y nos concentramos en los nombres. 
@@ -163,7 +175,10 @@ Frecuencia_nombres <- Nombres_tidy %>%
   arrange(desc(Nacimientos_Totales))  
 ```
 
-# Pruebas de evoluciones temporales
+## Pruebas de evoluciones temporales
+
+El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
+
 ```{r echo = FALSE}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
@@ -179,9 +194,11 @@ Nombre_evol <- Nombres_tidy %>%
   arrange(Decada) %>% 
   group_by(Decada)
 
-#print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc 
+#print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
+```
 
-
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
+```{r echo = FALSE}
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(){
   Nombres_tidy %>%
@@ -203,9 +220,6 @@ Nombres_nb_decada <- function(decada){
     unique()
 }
 
-# No parece dividirse por décadas
-# No se divide por décadas porque todos los nombres aparecen, solo que en algunas décadas con NA, 
-# creo que lo puedo arreglar, pero dejaré la opción para todas las décadas también
 unisex <- Nombres_nb() # Opción para todas las décadas
 
 # Los nombres unisex son un porcentaje muy bajo del total
@@ -221,10 +235,20 @@ cada_sexo_nb <- Nombres_tidy %>%
   summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
 
 cada_sexo_nb
-# Por lo general la mayoría de los nombres unisex tienden bastante hacia uno de los dos sexos
 ```
 
-# Gráficos tendencias nombres
+
+## Gráficos tendencias nombres
+
+Se generan diversas representaciones visuales para analizar la evolución temporal de los datos:
+
+- Volumen de nacimientos: Permite identificar fluctuaciones demográficas, como el baby boom o periodos de descenso en la natalidad.
+
+- Características de los nombres: Analiza cambios estilísticos, como la evolución de la longitud media y la porcentaje de nombres compuestos respecto al total. Esto revela tendencias culturales, evidenciando el abandono de nombres tradicionales largos en favor de opciones más cortas.
+
+- Diversidad de nombres: Se observa la tendencia en la cantidad de nombres distintos utilizados a lo largo de las décadas, indicando una tendencia hacia una mayor heterogeneidad en la elección de estos.
+
+- Renovación: Gráficos sobre la aparición de nuevos nombres y la desaparición de aquellos que quedan en desuso con el paso del tiempo.
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
 grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = waiver()){
@@ -526,3 +550,6 @@ ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_blank(),
     axis.ticks.x = element_blank())
 ```
+
+# Conclusiones
+Aquí irá la conclusión
