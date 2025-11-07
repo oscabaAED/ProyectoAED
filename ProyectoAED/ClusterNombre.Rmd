@@ -1,0 +1,49 @@
+---
+title: "Prueba cluster nombres"
+author: "Lucía Benages Guijarro"
+date: "2025-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Librería distancias entre strings
+library(stringdist)
+# Cargar los datos
+load('../data/NombresTidy.RData')
+```
+
+
+```{r}
+# Lista de nombres
+Todos_nombres <- unique(Nombres_tidy$Nombre)
+
+# Distancia entre los nombres por el método de longest common substring
+distancia_nom <- stringdistmatrix(Todos_nombres, method = "lcs")
+
+# Dendrograma
+dendrograma <- hclust(as.dist(distancia_nom))
+plot(dendrograma) # Es feo esto no se dibujaría
+```
+```{r}
+# Sacar los grupos
+clus <- cutree(dendrograma, h=22)
+
+# Dataframe con los clusters, me quedo con los nacimientos totales, los clusters aparecen por orden así que asumo que coinciden
+Ncluster <- Nombres_tidy %>%
+  group_by(Nombre) %>%
+  summarise(Nacimientos=sum(Nac., na.rm=T)) %>%
+  mutate(Cluster=clus) 
+
+# Sacar los grupos
+for(i in unique(Ncluster$Cluster)){
+  a <- Ncluster %>% 
+  filter(Cluster==i) %>%
+  arrange(desc(Nacimientos))
+  print(a)
+}
+```
+
