@@ -187,12 +187,31 @@ Decada_2000 <- Nombres_tidy %>%
   arrange(desc(`Nac./1000`)) %>% 
   group_by(Sexo)
 
-# Evolución de un nombre a lo largo del tiempo
-Nombre_evol <- Nombres_tidy %>%
-  filter(Nombre == str_to_upper("Marc")) %>% 
-  select(Nombre, Decada, `Nac./1000`, Sexo) %>%
-  arrange(Decada) %>% 
-  group_by(Decada)
+# Evolución de nombres a lo largo del tiempo
+nombres_seleccionados <- c("MARC", "JOAN", "VICENT")
+
+Nombres_evol_plot <- Nombres_tidy %>%
+  filter(Nombre %in% nombres_seleccionados) %>%
+  mutate(Decada = as.numeric(Decada)) %>%
+  filter(!is.na(`Nac./1000`))
+
+ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Evolución de Nombres Valencianos Populares",
+    subtitle = "Frecuencia por mil nacimientos (1930-2020)",
+    x = "Década",
+    y = "Nacimientos por mil",
+    color = "Nombre"
+  ) +
+  scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    legend.position = "bottom"
+  )
 
 #print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
 ```
