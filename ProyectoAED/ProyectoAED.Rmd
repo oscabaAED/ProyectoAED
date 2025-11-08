@@ -237,7 +237,8 @@ if(knitr::is_latex_output()){
   # Para editar el tamaño de la tabla en el pdf (son muy grandes)
   k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy",
               format="latex", booktabs = TRUE) %>%
-  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
+                font_size = 8)
 } else{
   k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy")
 }
@@ -343,7 +344,22 @@ cada_sexo_nb <- Nombres_tidy %>%
   group_by(Nombre) %>%
   summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
 
-cada_sexo_nb %>% kable(caption = 'Nombres unisex con su correspondiente porcentaje para cada género')
+
+# Tabla con los resultados
+if(knitr::is_latex_output()){
+  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
+  kable(list(cada_sexo_nb[1:(nrow(cada_sexo_nb)/2),],  
+           matrix(numeric(), nrow=0, ncol=1),
+           cada_sexo_nb[ceiling(nrow(cada_sexo_nb)/2+1):nrow(cada_sexo_nb),]),
+        caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
+} else{
+  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
+  print(cada_sexo_nb)
+  #cada_sexo_nb %>% kable(caption = 'Nombres unisex con su correspondiente porcentaje para cada género')
+}
+
 ```
 
 
@@ -590,7 +606,29 @@ Nom_populares <- Nombres_tidy %>%
   arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de mujeres nacidas con ese nombre)
   slice(1:5) %>%
   ungroup()
-print(Nom_populares)
+
+# Para organizar mejor la tabla creamos otra variable
+
+Nom_populares_tabla <- Nom_populares %>% select(Decada, Sexo, Nombre) %>%
+  group_by(Decada, Sexo) %>%
+  mutate(Posicion = row_number()) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Posicion, values_from = Nombre) %>%
+  mutate('5 nombres más populares (de mayor a menor)' = paste(`1`,`2`,`3`,`4`,`5`, sep=", ")) %>%
+  select(Decada, Sexo, `5 nombres más populares (de mayor a menor)`)
+
+# Mostramos la tabla con el resultado para nombres populares
+if(knitr::is_latex_output()){
+  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
+  kable(Nom_populares_tabla,
+        caption = 'Cinco nombres más populares por década y sexo',
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), 
+                full_width = F, font_size = 8)
+} else{
+  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
+  print(Nom_populares_tabla)
+}
 
 lista_df_decadas <- Nom_populares %>%
   group_by(Decada) %>%
@@ -618,24 +656,8 @@ for (df_decada in lista_df_decadas) {
   print(g_actual)
 }
 ```
-Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religioso, pero a partir de 1990 esta tendencia decrece.
+Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religiosos, pero a partir de 1990 esta tendencia decrece.
 
-```{r echo = FALSE}
-# Dada una lista de nombres y su sexo ordenarlos por mayor número de nacimientos desde 1930 y encontrar su década de máxima popularidad
-# Los he seleccionado de manera aleatoria por el momento
-nombres <- sample_n(Nombres_tidy, 10)[,c('Nombre','Sexo')]
-
-Ranking <- Nombres_tidy %>%
-  semi_join(nombres, by=c('Nombre','Sexo')) %>% # Conseguir el dataframe de los nombres elegidos
-  group_by(Nombre, Sexo) %>%
-  summarise(`Nacidos desde 1930`=sum(Nac., na.rm = TRUE), MaximaFreq=max(`Nac./1000`, na.rm = TRUE)) %>%
-  left_join(Nombres_tidy, by = c("MaximaFreq" = "Nac./1000", "Nombre", "Sexo")) %>%
-  rename(`Década de máxima frecuencia`=Decada) %>%
-  select(Nombre, Sexo, `Nacidos desde 1930`, `Década de máxima frecuencia`) %>% 
-  arrange(desc(`Nacidos desde 1930`))
-
-Ranking
-```
 
 ```{r echo = FALSE}
 #Ranking nombres de clase 
