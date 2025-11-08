@@ -1,30 +1,27 @@
 ---
-title: Frecuencias de nombres de la Comunidad Valenciana a lo largo de las decadas 1930 a 2020
+title: Frecuencias de nombres de la provincia de Valencia a lo largo de las decadas de 1930 a 2020
 author:
   - name: Óscar Camacho Barreda
   - name: Florencia Pellegrini
   - name: Lucía Benages Guijarro
 
-# document options
 journal: notspecified
 type: article
 status: submit
-# front matter
+
 simplesummary: |
   A Simple sumarry...
 abstract: |
   A single paragraph of about 200 words maximum...
   
 abbreviations:
-  - short: MDPI
-    long: Multidisciplinary Digital Publishing Institute
-  - short: DOAJ
-    long: Directory of open access journals
+  - short: Nac.
+    long: Nacimientos
 
 bibliography: mybibfile.bib
 appendix: false
-endnotes: false
-output: 
+endnotes: false 
+output:
   rticles::mdpi_article:
     extra_dependencies: longtable
     keep_tex: true
@@ -32,43 +29,52 @@ output:
 
 # Introducción
 
-El objetivo principal de este proyecto es familiarizarse con técnicas básicas de análisis exploratorio de datos  (como la manipulación de estos y su visualización) de manera práctica, escogiendo un conjunto disponible y realizando sobre él el estudio que resulte apropiado.  
+El presente proyecto tiene como objetivo principal la aplicación práctica de técnicas de Análisis Exploratorio de Datos. A través de la manipulación, limpieza y visualización de un conjunto de datos demográficos, se busca identificar patrones socioculturales reflejados en las tendencias de elección de nombres a lo largo de casi un siglo.
 
-Hemos escogido trabajar con datos acerca de la frecuencia de nombres por província y década procedentes del Instituto Nacional de Estadística. Estos datos se encuentran libremente disponibles y se pueden consultar en la siguiente dirección: <https://www.ine.es/tnombres/formGeneralresult.do?vista=3#_TabConsulta>.  
+La fuente de datos seleccionada proviene del Instituto Nacional de Estadística (INE). Específicamente, se ha trabajado con los registros de frecuencia de nombres de recién nacidos para la provincia de Valencia, abarcando las décadas comprendidas entre 1930 y 2020. Estos datos se encuentran libremente disponibles y se pueden consultar en la siguiente dirección: <https://www.ine.es/tnombres/formGeneralresult.do?vista=3#_TabConsulta>.
 
-Para este estudio, hemos seleccionado los datos correspondientes a la província de Valencia para las décadas desde 1930 a 2020. Cabe destacar que los datos proceden del Censo anual de población a fecha 01/01/2024, por lo que la década de 2020 se encuentra incompleta y desactualizada desde ese momento.  
-También hemos de tener en cuenta que los datos para la frecuencia de un determinado nombre tan solo son públicos si la frecuencia de este nombre es superior a 5 por província y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos.
+Cabe destacar que los datos proceden del censo anual de población a fecha 01/01/2024, por lo que la década de 2020 se encuentra incompleta y sus cifras son parciales. También se ha de tener en cuenta que la frecuencia de un determinado nombre tan solo se publica si es superior o igual a 5 por provincia y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos. Además, los datos originales se encuentran segmentados en múltiples archivos, separados por género y década, lo que requerirá una etapa previa de integración.
 
 ## Cargar librerías a utilizar
-```{r}
+
+```{r }
 library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunque se tengan que instalar
 
 p_load(stringr) # Manipulación de datos de tipo texto
 p_load(tidyr, dplyr) # Manejado de datos
-p_load(ggplot2) # Visualización
+p_load(ggplot2, visdat, viridis) # Visualización
+p_load(patchwork) # Agrupación de plots
+p_load(knitr, kableExtra, flextable, gt, gtsummary) # Para tablas
 ```
 
 
-## Importación inicial de los datos
+## Importación inicial de los datos  
 
-Cargaremos los datos de diversos ficheros csv diferentes, y los uniremos directamente juntando las diversas columnas que aparecen (por nombre), el dataframe resultante de esta operación se habrá de alterar más adelante para que sea más adecuado para trabajar con los datos.
+Para gestionar la información dispersa en múltiples archivos, es necesario leer cada fichero .csv individualmente. De sus nombres de archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
 
-```{r}
-# ESTO EN TEORÍA FUNCIONA, para leerlos todos
+Originalmente, cada archivo cuenta con tres variables:  
 
+- Nombre: Nombre propio registrado.  
+
+- Total: Número total de nacimientos con ese nombre en esa década específica (frecuencia absoluta).  
+
+- Por mil: Frecuencia relativa del nombre por cada mil nacimientos.  
+
+Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (Nombres) utilizando la columna "Nombre" como clave común.   
+
+
+```{r echo = FALSE}
+# Renombramos las variables ya que no aparecen en formato correcto si se seleccionan del csv
 variables <- c('Nombre', 'Nac.', 'Nac./1000')
+# Creamos una variable con todos los nombres de los ficheros
 ficheros <- paste0('../data/',list.files('../data'))
 # Seleccionar solo los archivos que sabemos que tienen los datos de nombres
 ficheros <- grep('nombres.*[.]csv',ficheros, value=T)
 # Esto recoge la parte numérica al final del fichero que es donde están las últimas dos cifras de la década
 decadas <- gsub("[.]csv","",str_extract(list.files('../data'),'[a-z0-9\\-]+[.]csv'))
 
-# Elimina los menores de 30 y convierte los números a década completa
+# Convierte los números a década completa
 decadas <- sapply(decadas, function(x) {
-  # Si es menor30, se descarta devolviendo NA
-  if (grepl("menor30", x, ignore.case = TRUE)) {
-    return(NA)
-  }
   # Si es 30-39 lo pasamos a 1930
   if (grepl("30-39", x)) {
     return("1930")
@@ -132,15 +138,37 @@ TotalH$Sexo <- 'Hombre'
 Nombres <- rbind(TotalH,TotalM)
 Nombres$Sexo <- factor(Nombres$Sexo)
 
-# Lo voy a guardar y eliminar las variables que no usamos más porque son grandes, ocuparán bastante
-save(Nombres, file = '../data/NombresSucio.RData')
-rm(list = ls())
-load('../data/NombresSucio.RData')
+# Hemos guardado muchas variables auxiliares que ya no se van a utilizar, limpiamos las variables excepto el dataframe final
+rm(list = grep('Nombres', ls(), value=TRUE, invert = TRUE))
 ```
+
+Una vez hecha la unión podemos realizar una primera evaluación visual de los datos con herramientas de la librería `visdat`.  
+```{r echo=FALSE, fig.dim=c(4.5,3.5)}
+# Contamos todas las frecuencias disponibles viendo cuáles no son NA y sumando
+completos <- sum(!is.na(Nombres[,colnames(Nombres)!=c('Nombre','Sexo')]))
+# Contamos todos los elementos del dataframe reservados para medidas de frecuencias
+totales <- prod(dim(Nombres[,colnames(Nombres)!=c('Nombre','Sexo')]))
+info_registros <- paste('\nRegistros de frecuencia (ambos tipos):',totales,
+                        '\nFrecuencias disponibles (ambos tipos):',completos, collapse = ' ')
+
+vis_dat(Nombres) + theme(axis.text.x = element_text(angle = 90)) +
+  labs(
+    subtitle = info_registros
+  )
+```
+
+Desde un primer momento podemos observar como esta manera de introducir los datos ha dado lugar a una gran cantidad de NAs introducidos por coerción en las observaciones de las frecuencias, de modo que esta estructuración de los datos seguramente no sea la opción más eficiente. Además también tenemos multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
+
+Estos problemas, causados la forma en que hemos combinado las diferentes observaciones, se pueden resolver transformando este dataframe resultante a formato tidy, facilitando así su manipulación y análisis gráfico.  
+
 
 ## Convertir el dataframe a formato tidy
 
-```{r}
+Dado que el dataframe Nombres contiene dos columnas separadas por cada década, se procede a su reestructuración utilizando funciones de tidyr y dplyr. Esta conversión a formato largo permite condensar estas múltiples columnas, quedando variables más claras: Nombre, Sexo, Década, Nac. y Nac./1000.  
+
+Separar las variables de década y frecuencias en dos columnas también nos permitirá limpiar el dataframe, eliminando correspondientes a las décadas en que un nombre determinado tiene por frecuencia no disponible (`NA`) sin afectar a los registros del resto de variables.  
+
+```{r echo = FALSE}
 # Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
 Nombres_longer <- Nombres %>%
   relocate(`Nac._2000`:`Nac./1000_2020`, .after = `Nac./1000_1990`) %>%  # Reordenamos primero las columnas de 1930 a 2020
@@ -149,12 +177,90 @@ Nombres_longer <- Nombres %>%
 
 # Convertimos a wider para poder obtener por separado ambas variables de nacimientos
 Nombres_tidy <- Nombres_longer %>% 
-  pivot_wider(names_from = "Tipo", values_from = "Valor")
+  pivot_wider(names_from = "Tipo", values_from = "Valor") %>%
+  drop_na()
 ```
 
+Una vez tranformado el dataframe a formato tidy, realizamos de nuevo una inspección visual de su contenido.  
 
-# Análisis univariante
-```{r}
+```{r echo=FALSE, fig.dim=c(4,3)}
+# Contamos todas las frecuencias disponibles a partir del número de columnas (eliminamos NAs)
+completos <- 2*sum(complete.cases(Nombres_tidy)) # *2 porque contamos ambos tipos de frecuencia
+# Contamos todos los elementos del dataframe reservados para medidas de frecuencias
+totales <- prod(dim(Nombres_tidy[,c(3,4)]))
+info_registros <- paste('\nRegistros de frecuencia (ambos tipos):',totales,
+                        '\nFrecuencias disponibles (ambos tipos):',completos, collapse = ' ')
+
+vis_dat(Nombres_tidy) + 
+  theme(axis.text.x = element_text(angle = 90, size = 10)) +
+  labs(
+    subtitle = info_registros
+  )
+```
+  
+  Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura tidy será por tanto no solo más sencilla de manipular sino que también almacena la información de manera más eficiente.
+
+## Descripción general de los datos
+
+Previamente a realizar el estudio deseado para este conjunto de datos resultará necesario conocer de manera general, sus características.  
+```{r echo=FALSE}
+# Todos los paquetes para hacer tablas que he encontrado han tenido problemas para crear una tabla con summary()
+## creamos aquí una función que corrija el formato de la tabla y la haga dataframe para que aparezca bien en el documento
+summary_para_table <- function(df){
+  # Primero hay que aplicar summary por separado a cada elemento, ya que queremos editarlos más adelante
+  sumlis <- lapply(df, summary)
+  # Obtenemos la longitud máxima ya que luego editaremos los elementos cortos para que todos tengan el mismo número de filas en el dataframe
+  max_len <- max(sapply(sumlis, length))
+  
+  for(i in 1:length(sumlis)){
+    base <- sumlis[[i]]
+    if(is.numeric(base)){
+      sumlis[[i]] <- paste0(names(base),': ', round(base, digits=3))
+    } else{
+      sumlis[[i]] <- paste0(names(base),': ', base)
+    }
+    
+    # Editamos longitud de cada vector hasta que todos sean iguales, ponemos " " que aparecerá en blanco en la tabla
+    longitud_actual <- length(sumlis[[i]])
+    while(longitud_actual < max_len){
+      sumlis[[i]] <- c(sumlis[[i]] ," ")
+      longitud_actual <- longitud_actual+1
+    }
+  }
+  # Pasamos a formato de dataframe, con los cambios que hemos hecho lo hará en el formato correcto
+  df_summary <- data.frame(sumlis, check.names = FALSE)
+  return(df_summary)
+}
+# Obtenemos nuestra tabla
+k <- summary_para_table(Nombres_tidy)
+if(knitr::is_latex_output()){
+  # Para editar el tamaño de la tabla en el pdf (son muy grandes)
+  k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy",
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
+                font_size = 8)
+} else{
+  # En el propio rmarkdown creo que aparece mejor el formato pr defecto
+  print(k)
+}
+
+```
+
+A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.
+
+
+# Objetivos (por poner algo de momento)
+- Explorar la evolución temporal de la popularidad de nombres.
+- Comparar tendencias por género.
+- Analizar aparición y desaparición de nombres.
+- Estudiar la influencia de factores sociculturales.
+
+
+# Análisis
+
+## Análisis univariante
+```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
 #Como sabemos que en la variable sexo las 2 categorias estan en proporción 50-50 y en la variable decada las categorias estan en proporción 0.1, obviamos este estudio y nos concentramos en los nombres. 
 
@@ -169,8 +275,11 @@ Frecuencia_nombres <- Nombres_tidy %>%
 Frecuencia_nombres
 ```
 
-# Pruebas de evoluciones temporales
-```{r}
+## Pruebas de evoluciones temporales
+
+El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
+
+```{r echo = FALSE}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
   filter(Decada == 2000, Sexo == "Hombre") %>% 
@@ -178,16 +287,40 @@ Decada_2000 <- Nombres_tidy %>%
   arrange(desc(`Nac./1000`)) %>% 
   group_by(Sexo)
 
-# Evolución de un nombre a lo largo del tiempo
-Nombre_evol <- Nombres_tidy %>%
-  filter(Nombre == str_to_upper("Pau")) %>% 
-  select(Nombre, Decada, `Nac./1000`, Sexo) %>%
-  arrange(Decada) %>% 
-  group_by(Decada)
+# Evolución de nombres a lo largo del tiempo
+nombres_seleccionados <- c("MARC", "JOAN", "VICENT", "JOSEP")
 
-print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc 
+Nombres_evol_plot <- Nombres_tidy %>%
+  filter(Nombre %in% nombres_seleccionados) %>%
+  mutate(Decada = as.numeric(Decada)) %>%
+  filter(!is.na(`Nac./1000`))
 
+ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+  geom_vline(xintercept = 1975, linetype = "dashed", color = "gray40", linewidth = 0.8) +
+  annotate("text", x = 1976, y = Inf, label = "Fin de la dictadura franquista",
+           hjust = 0, vjust = 1.5, color = "gray40", size = 3.5) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  labs(
+    title = "Evolución de Nombres Valencianos Populares",
+    subtitle = "Frecuencia por mil nacimientos (1930-2020)",
+    x = "Década",
+    y = "Nacimientos por mil",
+    color = "Nombre"
+  ) +
+  scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    legend.position = "bottom"
+  )
 
+#print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
+```
+
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
+```{r echo = FALSE, fig.dim=c(2,2)}
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(){
   Nombres_tidy %>%
@@ -209,12 +342,8 @@ Nombres_nb_decada <- function(decada){
     unique()
 }
 
-# No parece dividirse por décadas
-# No se divide por décadas porque todos los nombres aparecen, solo que en algunas décadas con NA, 
-# creo que lo puedo arreglar, pero dejaré la opción para todas las décadas también
 unisex <- Nombres_nb() # Opción para todas las décadas
-Nombres_nb_decada(1930)
-Nombres_nb_decada(2000)
+
 # Los nombres unisex son un porcentaje muy bajo del total
 length(Nombres_nb())/length(unique(Nombres_tidy$Nombre))
 
@@ -227,14 +356,39 @@ cada_sexo_nb <- Nombres_tidy %>%
   group_by(Nombre) %>%
   summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
 
-cada_sexo_nb
-# Por lo general la mayoría de los nombres unisex tienden bastante hacia uno de los dos sexos
+
+# Tabla con los resultados
+if(knitr::is_latex_output()){
+  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
+  kable(list(cada_sexo_nb[1:(nrow(cada_sexo_nb)/2),],  
+           matrix(numeric(), nrow=0, ncol=1),
+           cada_sexo_nb[ceiling(nrow(cada_sexo_nb)/2+1):nrow(cada_sexo_nb),]),
+        caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
+} else{
+  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
+  print(cada_sexo_nb)
+  #cada_sexo_nb %>% kable(caption = 'Nombres unisex con su correspondiente porcentaje para cada género')
+}
+
 ```
 
-# Gráficos tendencias nombres
-```{r}
 
-# Función que genera un gráfico a partir de los datos y variables introducidos
+## Gráficos tendencias nombres
+
+Se generan diversas representaciones visuales para analizar la evolución temporal de los datos:
+
+- Volumen de nacimientos: Permite identificar fluctuaciones demográficas, como el baby boom o periodos de descenso en la natalidad.
+
+- Características de los nombres: Analiza cambios estilísticos, como la evolución de la longitud media y la porcentaje de nombres compuestos respecto al total. Esto revela tendencias culturales, evidenciando el abandono de nombres tradicionales largos en favor de opciones más cortas.
+
+- Diversidad de nombres: Se observa la tendencia en la cantidad de nombres distintos utilizados a lo largo de las décadas, indicando una tendencia hacia una mayor heterogeneidad en la elección de estos.
+
+- Renovación: Gráficos sobre la aparición de nuevos nombres y la desaparición de aquellos que quedan en desuso con el paso del tiempo.  
+
+```{r echo = FALSE}
+# Generamos un gráfico a partir de los datos y variables introducidos
 grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = waiver()){
   
   # Convierte el nombre de la columna de forma que aes() lo pueda interpretar 
@@ -244,7 +398,8 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
   plot_data <- data %>%
     mutate(Decada = as.numeric(Decada))
   
-  ggplot(plot_data, aes(x = Decada, y = !!y_sym, color = Sexo, group = Sexo)) + ##!!y_sym usa la columna correspondiente a y_var
+  #!!y_sym usa la columna correspondiente a y_var
+  ggplot(plot_data, aes(x = Decada, y = !!y_sym, color = Sexo, group = Sexo)) + 
     geom_line(linewidth = 1) +
     geom_point(size = 2.5) +
     labs(
@@ -266,6 +421,11 @@ grafico_evolucion <- function(data, y_var, y_lab, title, subtitle, y_format = wa
     )
 }
 
+# Dataframe base con NAs filtrados
+Nombres_validos <- Nombres_tidy %>%
+  filter(!is.na(Nac.) & Nac. > 0) %>%
+  mutate(Decada_num = as.numeric(Decada))
+
 ## Nacimientos por década
 
 # Nacimientos totales agrupando por "Decada" y "Sexo"
@@ -273,33 +433,32 @@ nacimientos_por_sexo <- Nombres_tidy %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
-# Calcula el total de "Ambos" sumando los resultados ya calculados
+# Calculamos el total de "Ambos" sumando los resultados anteriores
 nacimientos_ambos <- nacimientos_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientos = sum(TotalNacimientos, na.rm = TRUE)) %>%
   mutate(Sexo = "Ambos")
 
-# Une los dataframes (por sexo y "Ambos") en uno solo y ordena
+# Unimos los dataframes (por sexo y "Ambos") en uno solo y los ordenamos
 Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
-  data = Total_Nacimientos_Decada,
+plot_nacimientos <- grafico_evolucion(
+  data = Total_Nacimientos_Decada %>% filter(Decada != "2020"),
   y_var = "TotalNacimientos",
-  y_lab = "Número Total de Nacimientos",
+  y_lab = "Total de Nacimientos",
   title = "Evolución del Número Total de Nacimientos",
-  subtitle = "Por década y género (1930-2020)",
+  subtitle = "Por década y género (1930-2010)",
 )
 
 
 ## Longitud media de nombres por década
 
-# Filtra filas sin nacimientos y calcula el número de carácteres de cada nombre
-Nombres_longitud <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0) %>%
+# Calculamos el número de carácteres de cada nombre
+Nombres_longitud <- Nombres_validos %>%
   mutate(Longitud = nchar(Nombre))
 
-# Calcula la media ponderada por sexo. Los nombres más comunes tienen más peso en la media
+# Calculamos la media ponderada por sexo. # Nombres más comunes tienen mayor peso en la media
 medias_por_sexo <- Nombres_longitud %>%
   group_by(Decada, Sexo) %>%
   summarise(LongitudMedia = weighted.mean(Longitud, w = Nac.), .groups = "drop")
@@ -313,7 +472,7 @@ medias_ambos_sexos <- Nombres_longitud %>%
 Longitud_media_comb <- bind_rows(medias_por_sexo, medias_ambos_sexos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_longitud <- grafico_evolucion(
   data = Longitud_media_comb,
   y_var = "LongitudMedia",
   y_lab = "Longitud Media del Nombre",
@@ -324,16 +483,16 @@ grafico_evolucion(
 
 ## Porcentaje nombres compuestos por década y sexo
 
-# Filtra solo los nombres que contienen un espacio
-Nombres_comp <- Nombres_tidy %>%
-  filter(grepl(" ", Nombre), !is.na(Nac.) & Nac. > 0)
+# Filtramos solo los nombres que contienen un espacio
+Nombres_comp <- Nombres_validos %>%
+  filter(grepl(" ", Nombre))
 
-# Suma los nacimientos de estos nombres compuestos, por sexo
+# Sumamos los nacimientos de estos nombres compuestos, por sexo
 comp_por_sexo <- Nombres_comp %>%
   group_by(Decada, Sexo) %>%
   summarise(TotalNacimientosCompuestos = sum(Nac., na.rm = TRUE), .groups = "drop")
 
-# Suma los totales por sexo para obtener el total de "Ambos"
+# Sumamos los totales por sexo para obtener el total de "Ambos"
 comp_ambos <- comp_por_sexo %>%
   group_by(Decada) %>%
   summarise(TotalNacimientosCompuestos = sum(TotalNacimientosCompuestos, na.rm = TRUE)) %>%
@@ -342,18 +501,18 @@ comp_ambos <- comp_por_sexo %>%
 Nacimientos_comp <- bind_rows(comp_por_sexo, comp_ambos) %>%
   arrange(Decada, Sexo)
 
-# Calcular el porcentaje
+# Calculamos el porcentaje
 Porcentaje_Comp_Decada <- Total_Nacimientos_Decada %>%
   left_join(Nacimientos_comp, by = c("Decada", "Sexo")) %>%
   mutate(
     TotalNacimientosCompuestos = replace_na(TotalNacimientosCompuestos, 0)
-  ) %>%
+    ) %>%
   mutate(
     PorcentajeCompuestos = (TotalNacimientosCompuestos / TotalNacimientos) * 100
-  ) %>%
+    ) %>%
   select(Decada, Sexo, PorcentajeCompuestos)
 
-grafico_evolucion(
+plot_compuestos <- grafico_evolucion(
   data = Porcentaje_Comp_Decada,
   y_var = "PorcentajeCompuestos",
   y_lab = "Porcentaje de Nacimientos (%)",
@@ -365,75 +524,63 @@ grafico_evolucion(
 
 ## Cantidad de nombres distintos por década y sexo
 
-# Filtra filas sin nacimientos
-Nombres_variedad <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0)
-
-# Calcula la cantidad de nombres distintos por década y sexo
-variedad_sexo <- Nombres_variedad %>%
+# Calculamos la cantidad de nombres distintos por década y sexo
+variedad_sexo <- Nombres_validos %>%
   group_by(Decada, Sexo) %>%
   summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop")
 
-variedad_ambos <- Nombres_variedad %>%
+variedad_ambos <- Nombres_validos %>%
   group_by(Decada) %>%
-  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop") %>% 
+  summarise(NombresDistintos = n_distinct(Nombre), .groups = "drop") %>%
   mutate(Sexo = "Ambos")
 
 Variedad_Nombres_Decada <- bind_rows(variedad_sexo, variedad_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
-  data = Variedad_Nombres_Decada,
+plot_variedad <- grafico_evolucion(
+  data = Variedad_Nombres_Decada %>% filter(Decada != "2020"),
   y_var = "NombresDistintos",
   y_lab = "Nombres Distintos",
   title = "Evolución de la Variedad de Nombres Distintos",
-  subtitle = "Por década y género (1930-2020)"
+  subtitle = "Por década y género (1930-2010)"
 )
 
 
 ## Nuevos nombres por década y sexo
 
-Nombres_nuevos_decada <- Nombres_tidy %>%
-  filter(!is.na(Nac.) & Nac. > 0)
-
-Nombres_unicos_decada <- Nombres_nuevos_decada %>%
-  group_by(Decada, Sexo, Nombre) %>%
-  mutate(Decada = as.numeric(Decada))
-
-Nombres_primera_aparicion <- Nombres_unicos_decada %>%
+Nombres_primera_aparicion <- Nombres_validos %>%
   group_by(Nombre, Sexo) %>%
-  summarise(PrimeraDecada = min(Decada, na.rm = T), .groups = "drop")
+  summarise(PrimeraDecada = min(Decada_num, na.rm = T), .groups = "drop")
 
-nuevos_nombres_decada <- Nombres_primera_aparicion %>% 
-  group_by(Decada = as.character(PrimeraDecada), Sexo) %>% 
+nuevos_nombres_decada <- Nombres_primera_aparicion %>%
+  group_by(Decada = as.character(PrimeraDecada), Sexo) %>%
   summarise(NuevosNombres = n(), .groups = "drop")
 
-nuevos_nombres_ambos <- nuevos_nombres_decada %>% 
-  group_by(Decada) %>% 
-  summarise(NuevosNombres = sum(NuevosNombres, na.rm = T), .groups = "drop") %>% 
+nuevos_nombres_ambos <- nuevos_nombres_decada %>%
+  group_by(Decada) %>%
+  summarise(NuevosNombres = sum(NuevosNombres, na.rm = T), .groups = "drop") %>%
   mutate(Sexo = "Ambos")
 
 Nombres_Nuevos <- bind_rows(nuevos_nombres_decada, nuevos_nombres_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
-  data = Nombres_Nuevos,
+plot_novedad <- grafico_evolucion(
+  data = Nombres_Nuevos %>% filter(Decada != "2020"),
   y_var = "NuevosNombres",
   y_lab = "Nombres Nuevos",
   title = "Cantidad de Nombres Nuevos",
-  subtitle = "Por década y género (1930-2020)"
+  subtitle = "Por década y género (1930-2010)"
 )
 
 
 ## Número de nombres desaparecidos con el tiempo
 
-# Utilizamos el df del caso anterior para ver la última aparición de cada nombre
-Nombres_ultima_aparicion <- Nombres_unicos_decada %>%
+Nombres_ultima_aparicion <- Nombres_validos %>%
   group_by(Nombre, Sexo) %>%
-  summarise(UltimaDecada = max(Decada, na.rm = TRUE), .groups = "drop")
+  summarise(UltimaDecada = max(Decada_num, na.rm = TRUE), .groups = "drop")
 
 # Excluimos 2020 porque es la última década que tenemos disponible
-max_decada_total <- max(Nombres_unicos_decada$Decada, na.rm = TRUE)
+max_decada_total <- max(Nombres_validos$Decada_num, na.rm = TRUE)
 
 Nombres_desaparecidos <- Nombres_ultima_aparicion %>%
   filter(UltimaDecada < max_decada_total)
@@ -450,25 +597,85 @@ desaparecidos_ambos <- desaparecidos_por_sexo %>%
 Total_Nombres_Desaparecidos <- bind_rows(desaparecidos_por_sexo, desaparecidos_ambos) %>%
   arrange(Decada, Sexo)
 
-grafico_evolucion(
+plot_desaparicion <- grafico_evolucion(
   data = Total_Nombres_Desaparecidos,
   y_var = "NombresDesaparecidos",
-  y_lab = "Número de Nombres Desaparecidos",
+  y_lab = "Nombres Desaparecidos",
   title = "Nombres que Desaparecen por Década",
-  subtitle = "Nombres vistos por última vez en esa década (y que no reaparecen)",
+  subtitle = "Nombres vistos por última vez en esa década (1930-2010)",
 )
 
+plot_nacimientos / plot_variedad 
+plot_compuestos / plot_longitud 
+plot_novedad / plot_desaparicion
+```
+## Heatmap 25 nombres más populares a lo largo de las décadas
+```{r, echo=FALSE}
+top25_nombres <- Frecuencia_nombres %>%
+  slice(1:25) %>%
+  pull(Nombre)
+
+top25 <- Nombres_tidy %>%
+  filter(Nombre %in% top25_nombres, Decada != 2020)
+
+heatmap_top25 <- ggplot(
+  top25,
+  aes(x = factor(Decada),
+      y = reorder(Nombre, Nac.),
+      fill = Nac.)
+) +
+  geom_tile(color = "white") +
+  scale_fill_viridis(option = "D", direction = 1) +
+  labs(
+    title = "Popularidad de los 25 Nombres Más Frecuentes por Década",
+    subtitle = "Frecuencia total de nacimientos por nombre y década",
+    x = "Década",
+    y = "Nombre",
+    fill = "Frecuencia"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    panel.grid = element_blank()
+  )
+
+heatmap_top25
 ```
 
+
 ## Análisis bivariante
-```{r}
+```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
 Nom_populares <- Nombres_tidy %>%
   group_by(Sexo, Decada) %>%
   arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de mujeres nacidas con ese nombre)
   slice(1:5) %>%
   ungroup()
-print(Nom_populares)
+
+# Para organizar mejor la tabla creamos otra variable
+
+Nom_populares_tabla <- Nom_populares %>% select(Decada, Sexo, Nombre) %>%
+  group_by(Decada, Sexo) %>%
+  mutate(Posicion = row_number()) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Posicion, values_from = Nombre) %>%
+  mutate('5 nombres más populares (de mayor a menor)' = paste(`1`,`2`,`3`,`4`,`5`, sep=", ")) %>%
+  select(Decada, Sexo, `5 nombres más populares (de mayor a menor)`)
+
+# Mostramos la tabla con el resultado para nombres populares
+if(knitr::is_latex_output()){
+  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
+  kable(Nom_populares_tabla,
+        caption = 'Cinco nombres más populares por década y sexo',
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), 
+                full_width = F, font_size = 8)
+} else{
+  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
+  print(Nom_populares_tabla)
+}
 
 lista_df_decadas <- Nom_populares %>%
   group_by(Decada) %>%
@@ -496,25 +703,9 @@ for (df_decada in lista_df_decadas) {
   print(g_actual)
 }
 ```
-Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religioso, pero a partir de 1990 esta tendencia decrece.
+Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religiosos, pero a partir de 1990 esta tendencia decrece.
 
-```{r}
-# Dada una lista de nombres y su sexo ordenarlos por mayor número de nacimientos desde 1930 y encontrar su década de máxima popularidad
-# Los he seleccionado de manera aleatoria por el momento
-nombres <- sample_n(Nombres_tidy, 10)[,c('Nombre','Sexo')]
-
-Ranking <- Nombres_tidy %>%
-  semi_join(nombres, by=c('Nombre','Sexo')) %>% # Conseguir el dataframe de los nombres elegidos
-  group_by(Nombre, Sexo) %>%
-  summarise(`Nacidos desde 1930`=sum(Nac., na.rm = TRUE), MaximaFreq=max(`Nac./1000`, na.rm = TRUE)) %>%
-  left_join(Nombres_tidy, by = c("MaximaFreq" = "Nac./1000", "Nombre", "Sexo")) %>%
-  rename(`Década de máxima frecuencia`=Decada) %>%
-  select(Nombre, Sexo, `Nacidos desde 1930`, `Década de máxima frecuencia`) %>% 
-  arrange(desc(`Nacidos desde 1930`))
-
-Ranking
-```
-```{r}
+```{r echo = FALSE}
 #Ranking nombres de clase 
 
 nombres_clase <- toupper(c("Adrian", "Adriana", "Alvaro", "Ana", "Axel", "Azahara", "Carlos", "Clara", "Cristhian", "Fabian", "Florencia", "Hector", "Irene", "Iyán", "Javier", "Jeremy", "Joan", "Jose", "Juan", "Lucia",  "María de los Ángeles", "Mario", "Oscar", "Pablo", "Pol", "An"))
@@ -524,16 +715,48 @@ ranking_nombres_clase <- Nombres_tidy %>%
          Nombre %in% nombres_clase) %>% 
   select(Decada, Nombre, Nac.) %>%
   arrange(desc(Nac.)) 
-ranking_nombres_clase
 
-# Gráfico del ranking de la clase - BORRAR, ERA POR VER COMO QUEDABA
+# Añadimos datos para los nombres de la lista de clase que no estaban en el conjunto de datos
+# Para el gráfico añadimos el 0 ya que es más sencillo que representar el rango
+num_no_aparecen <- sum(!(nombres_clase %in% ranking_nombres_clase$Nombre))
+if(num_no_aparecen>0){ #añadimos los que no aparexan
+  no_aparecen <- nombres_clase[!(nombres_clase %in% ranking_nombres_clase$Nombre)]
+  ranking_nombres_clase[nrow(ranking_nombres_clase)+1:num_no_aparecen,'Nombre'] <- no_aparecen
+  
+  ranking_nombres_clase <- ranking_nombres_clase %>% 
+    mutate(Decada='2000', Nac. = replace_na(Nac., 0))
+}
+
+# Para la tabla pasaremos Nac. a carácter e introducimos el rango 0-4 que se visualiza igual
+ranking_tabla <- ranking_nombres_clase %>%
+  rename('Nacimientos'=Nac.) %>%
+  mutate(Nacimientos = as.character(Nacimientos)) %>%
+  mutate(Nacimientos=str_replace_all(Nacimientos,'^0','0-4'))
+
+ranking_tabla
+```
+
+
+```{r echo = FALSE, results='hide'}
+# Gráfico del ranking de la clase, ponemos results hide porque sólo nos interesa tenerlo para la presentación
 ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   geom_col(fill = "steelblue") +
-  geom_text(aes(label = Nombre), vjust = -0.5, size = 1.5) +
+  geom_text(data=subset(ranking_nombres_clase, Nombre!="MARIA DE LOS ANGELES"),
+            label = ranking_nombres_clase$Nombre[ranking_nombres_clase$Nombre!="MARIA DE LOS ANGELES"],
+            nudge_y = 630, size = 4, angle = 90) +
+  # Etiqueta por separado para que un nombre muy largo aparezca bien
+  geom_text(data=subset(ranking_nombres_clase, Nombre=="MARIA DE LOS ANGELES"),
+            aes(label = "MARIA DE LOS ANGELES"), 
+            nudge_y = 1400, size = 4, angle = 90) + 
+  expand_limits(y=5200) + 
   labs(title = "Ranking de Nombres de la Clase en la Década de 2000",
        x = NULL,
        y = "Número de Nacimientos") +
   theme_minimal() +
   theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_blank(),
     axis.ticks.x = element_blank())
+
+ggsave("../figs/RankingClase.png")
 ```
+
+# Conclusiones
