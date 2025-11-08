@@ -240,7 +240,8 @@ if(knitr::is_latex_output()){
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
                 font_size = 8)
 } else{
-  k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy")
+  # En el propio rmarkdown creo que aparece mejor el formato pr defecto
+  print(k)
 }
 
 ```
@@ -713,18 +714,48 @@ ranking_nombres_clase <- Nombres_tidy %>%
          Nombre %in% nombres_clase) %>% 
   select(Decada, Nombre, Nac.) %>%
   arrange(desc(Nac.)) 
-ranking_nombres_clase
 
-# Gráfico del ranking de la clase - BORRAR, ERA POR VER COMO QUEDABA
+# Añadimos datos para los nombres de la lista de clase que no estaban en el conjunto de datos
+# Para el gráfico añadimos el 0 ya que es más sencillo que representar el rango
+num_no_aparecen <- sum(!(nombres_clase %in% ranking_nombres_clase$Nombre))
+if(num_no_aparecen>0){ #añadimos los que no aparexan
+  no_aparecen <- nombres_clase[!(nombres_clase %in% ranking_nombres_clase$Nombre)]
+  ranking_nombres_clase[nrow(ranking_nombres_clase)+1:num_no_aparecen,'Nombre'] <- no_aparecen
+  
+  ranking_nombres_clase <- ranking_nombres_clase %>% 
+    mutate(Decada='2000', Nac. = replace_na(Nac., 0))
+}
+
+# Para la tabla pasaremos Nac. a carácter e introducimos el rango 0-4 que se visualiza igual
+ranking_tabla <- ranking_nombres_clase %>%
+  rename('Nacimientos'=Nac.) %>%
+  mutate(Nacimientos = as.character(Nacimientos)) %>%
+  mutate(Nacimientos=str_replace_all(Nacimientos,'^0','0-4'))
+
+ranking_tabla
+```
+
+
+```{r echo = FALSE, results='hide'}
+# Gráfico del ranking de la clase, ponemos results hide porque sólo nos interesa tenerlo para la presentación
 ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   geom_col(fill = "steelblue") +
-  geom_text(aes(label = Nombre), vjust = -0.5, size = 1.5) +
+  geom_text(data=subset(ranking_nombres_clase, Nombre!="MARIA DE LOS ANGELES"),
+            label = ranking_nombres_clase$Nombre[ranking_nombres_clase$Nombre!="MARIA DE LOS ANGELES"],
+            nudge_y = 630, size = 4, angle = 90) +
+  # Etiqueta por separado para que un nombre muy largo aparezca bien
+  geom_text(data=subset(ranking_nombres_clase, Nombre=="MARIA DE LOS ANGELES"),
+            aes(label = "MARIA DE LOS ANGELES"), 
+            nudge_y = 1400, size = 4, angle = 90) + 
+  expand_limits(y=5200) + 
   labs(title = "Ranking de Nombres de la Clase en la Década de 2000",
        x = NULL,
        y = "Número de Nacimientos") +
   theme_minimal() +
   theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_blank(),
     axis.ticks.x = element_blank())
+
+ggsave("../figs/RankingClase.png")
 ```
 
 # Conclusiones
