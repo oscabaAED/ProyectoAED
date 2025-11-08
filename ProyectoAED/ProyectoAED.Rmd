@@ -38,17 +38,17 @@ output:
       - float
       - wrapfig
       - caption
+      
 header-includes:
-  - \usepackage{polyglossia}
-  - \setdefaultlanguage{spanish}
-  - \setlength{\headheight}{20pt}
-  - \makeatletter
-  - \providecommand{\pandocbounded}[1]{#1}
-  - \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-  - \makeatother
-  - \usepackage{graphicx}
-  - \usepackage{float} % para [H]
-  - \setkeys{Gin}{width=\linewidth,keepaspectratio} % toda imagen cabe en el ancho de texto
+  - '\usepackage{polyglossia}'
+  - '\setdefaultlanguage{spanish}'
+  - '\setlength{\headheight}{20pt}'
+  - '\usepackage{graphicx}'
+  - '\usepackage{float}'
+  - '\setkeys{Gin}{width=\linewidth,keepaspectratio}'
+  - '\makeatletter'
+  - '\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}'
+  - '\makeatother'
 ---
 
 # Introducción
@@ -73,8 +73,11 @@ p_load(knitr, kableExtra) # Para tablas
 
 knitr::opts_chunk$set(
   fig.align = "center",
-  out.width = "\\linewidth",   # respeta márgenes de la plantilla
-  fig.pos = "H"                # coloca la figura y reduce cortes
+  out.width = "\\linewidth",
+  fig.pos = "H",
+  tidy = TRUE,              # Reformatea el código
+  tidy.opts = list(width.cutoff = 60),  # Ancho máximo de línea
+  comment = NA              # Quita los "##" de los outputs
 )
 ```
 
