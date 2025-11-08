@@ -21,10 +21,31 @@ abbreviations:
 bibliography: mybibfile.bib
 appendix: false
 endnotes: false 
+
 output:
   rticles::mdpi_article:
-    extra_dependencies: longtable
     keep_tex: true
+    latex_engine: xelatex
+    extra_dependencies:
+      - booktabs
+      - longtable
+      - threeparttable
+      - threeparttablex
+      - array
+      - multirow
+      - colortbl
+      - xcolor
+      - float
+      - wrapfig
+      - caption
+header-includes:
+  - \usepackage{polyglossia}
+  - \setdefaultlanguage{spanish}
+  - \setlength{\headheight}{20pt}
+  - \makeatletter
+  - \providecommand{\pandocbounded}[1]{#1}
+  - \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+  - \makeatother
 ---
 
 # Introducción
