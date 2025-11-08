@@ -609,7 +609,7 @@ plot_compuestos / plot_longitud
 plot_novedad / plot_desaparicion
 ```
 ## Heatmap 25 nombres más populares a lo largo de las décadas
-```{r}
+```{r, echo=FALSE}
 top25_nombres <- Frecuencia_nombres %>%
   slice(1:25) %>%
   pull(Nombre)
