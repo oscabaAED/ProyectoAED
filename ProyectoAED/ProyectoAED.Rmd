@@ -237,7 +237,7 @@ if(knitr::is_latex_output()){
   # Para editar el tamaño de la tabla en el pdf (son muy grandes)
   k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy",
               format="latex", booktabs = TRUE) %>%
-  kable_styling(latex_options="scale_down")
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
 } else{
   k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy")
 }
@@ -245,7 +245,7 @@ if(knitr::is_latex_output()){
 ```
 
 A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
-Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un pequeño (comparativamente) conjunto de nombres.
+Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.
 
 
 # Análisis
