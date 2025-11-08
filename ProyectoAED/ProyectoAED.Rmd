@@ -44,7 +44,7 @@ p_load(stringr) # Manipulación de datos de tipo texto
 p_load(tidyr, dplyr) # Manejado de datos
 p_load(ggplot2, visdat, viridis) # Visualización
 p_load(patchwork) # Agrupación de plots
-p_load(knitr, kableExtra, flextable, gt, gtsummary) # Para tablas
+p_load(knitr, kableExtra) # Para tablas
 ```
 
 
