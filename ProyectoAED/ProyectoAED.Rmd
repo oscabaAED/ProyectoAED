@@ -57,18 +57,24 @@ La fuente de datos seleccionada proviene del Instituto Nacional de Estadística 
 Cabe destacar que los datos proceden del censo anual de población a fecha 01/01/2024, por lo que la década de 2020 se encuentra incompleta y sus cifras son parciales. También se ha de tener en cuenta que la frecuencia de un determinado nombre tan solo se publica si es superior o igual a 5 por provincia y década, por lo que este conjunto cuenta con una cantidad desconocida de registros perdidos. Además, los datos originales se encuentran segmentados en múltiples archivos, separados por género y década, lo que requerirá una etapa previa de integración.
 
 ## Cargar librerías a utilizar
+Para el análisis de los datos utilizaremos las librerías indicadas en la siguiente tabla.  
 
-```{r }
+| Uso                            |              Librerias              |
+|--------------------------------|:-----------------------------------:|
+| Importar el resto de librerias |                pacman               |
+| Manejo de datos                |             dplyr, tidyr            |
+| Visualizacion                  | ggplot2, visdat, viridis, patchwork |
+| Tablas                         | kable, kableExtra                   |
+
+```{r echo=FALSE}
 library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunque se tengan que instalar
 
 p_load(stringr) # Manipulación de datos de tipo texto
-p_load(tidyr, dplyr) # Manejado de datos
+p_load(tidyr, dplyr) # Manejo de datos
 p_load(ggplot2, visdat, viridis) # Visualización
 p_load(patchwork) # Agrupación de plots
 p_load(knitr, kableExtra) # Para tablas
-```
 
-```{r echo= FALSE}
 knitr::opts_chunk$set(
   fig.align = "center",
   out.width = "\\linewidth",
@@ -174,7 +180,8 @@ rm(list = grep('Nombres', ls(), value=TRUE, invert = TRUE))
 ```
 
 Una vez hecha la unión podemos realizar una primera evaluación visual de los datos con herramientas de la librería `visdat`.  
-```{r echo=FALSE, fig.dim=c(4.5,3.5)}
+Una vez hecha la unión podemos realizar una primera evaluación visual de los datos con herramientas de la librería `visdat`.  
+```{r echo=FALSE, fig.dim=c(3,2), fig.show='hide'}
 # Contamos todas las frecuencias disponibles viendo cuáles no son NA y sumando
 completos <- sum(!is.na(Nombres[,colnames(Nombres)!=c('Nombre','Sexo')]))
 # Contamos todos los elementos del dataframe reservados para medidas de frecuencias
@@ -182,15 +189,26 @@ totales <- prod(dim(Nombres[,colnames(Nombres)!=c('Nombre','Sexo')]))
 info_registros <- paste('\nRegistros de frecuencia (ambos tipos):',totales,
                         '\nFrecuencias disponibles (ambos tipos):',completos, collapse = ' ')
 
-vis_dat(Nombres) + theme(axis.text.x = element_text(angle = 90)) +
-  labs(
+
+vis_Nombres <- vis_dat(Nombres) + labs(
     subtitle = info_registros
-  )
+  ) +
+  theme(
+    axis.text.x   = element_text(angle = 90))
+# Ya no la guardo porque ya la tengo y si se guarda mientras se hace knit sale mal
+#suppressMessages(ggsave('../figs/VisdatNombresSucio.png', vis_Nombres))
+
+# Para que se vea bien en el pdf añadiremos la figura como imagen
 ```
 
-Desde un primer momento podemos observar como esta manera de introducir los datos ha dado lugar a una gran cantidad de NAs introducidos por coerción en las observaciones de las frecuencias, de modo que esta estructuración de los datos seguramente no sea la opción más eficiente. Además también tenemos multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
+```{r, echo=FALSE, out.width='85%', fig.align='center'}
+knitr::include_graphics("../figs/VisdatNombresSucio.png")
+```
 
-Estos problemas, causados la forma en que hemos combinado las diferentes observaciones, se pueden resolver transformando este dataframe resultante a formato tidy, facilitando así su manipulación y análisis gráfico.  
+Esta representación permite observar de manera sencilla los tipos de las variables. Podemos comprobar que estos han sido estructurados de manera correcta ya que contamos con `Nombres` de tipo `character` (propio de cadenas de texto), `Sexo` como variable de tipo factor (adecuado para variables categóricas con limitadas opciones) y todas las frecuencias presentes son de tipo numérico.  
+No obstante también podemos observar claramente otra característica principal del dataframe creado, que es la gran cantidad de datos faltantes (`NA`) que hemos introducido a causa de la combinación de diversos conjuntos de datos con diferente nombre.  Por otra parte, también contamos con multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
+
+Ambos problemas, podrán resolverse transformando este dataframe resultante a formato tidy, facilitando así su manipulación y análisis gráfico. 
 
 
 ## Convertir el dataframe a formato tidy
@@ -214,7 +232,7 @@ Nombres_tidy <- Nombres_longer %>%
 
 Una vez tranformado el dataframe a formato tidy, realizamos de nuevo una inspección visual de su contenido.  
 
-```{r echo=FALSE, fig.dim=c(4,3)}
+```{r echo=FALSE, fig.dim=c(3,2), fig.show='hide'}
 # Contamos todas las frecuencias disponibles a partir del número de columnas (eliminamos NAs)
 completos <- 2*sum(complete.cases(Nombres_tidy)) # *2 porque contamos ambos tipos de frecuencia
 # Contamos todos los elementos del dataframe reservados para medidas de frecuencias
@@ -223,13 +241,32 @@ info_registros <- paste('\nRegistros de frecuencia (ambos tipos):',totales,
                         '\nFrecuencias disponibles (ambos tipos):',completos, collapse = ' ')
 
 vis_dat(Nombres_tidy) + 
-  theme(axis.text.x = element_text(angle = 90, size = 10)) +
   labs(
     subtitle = info_registros
-  )
+  ) + 
+  theme_minimal(base_size = 8) +
+  theme(
+  axis.text.x = element_text(angle = 90)) 
+
+vis_Nombres_tidy <- vis_dat(Nombres_tidy) + labs(
+    subtitle = info_registros
+  ) +
+  theme(
+    axis.text.x   = element_text(angle = 90, size = 14),
+    plot.subtitle = element_text(size=15),
+    legend.text   = element_text(size = 14),
+    legend.title  = element_text(size = 14))
+# Ya no la guardo porque ya la tengo y si se guarda mientras se hace knit sale mal
+#suppressMessages(ggsave('../figs/VisdatNombresTidy.png', vis_Nombres_tidy))
 ```
-  
-  Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura tidy será por tanto no solo más sencilla de manipular sino que también almacena la información de manera más eficiente.
+
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics("../figs/VisdatNombresTidy.png")
+```
+
+Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura tidy será en consecuencia más sencilla de manipular y más eficiente para contener la información disponible.  
+
+Cabe destacar también que la nueva variable generada para las décadas es de tipo caracter, dado que para nuestro análisis las decas serán utilizadas como clasificador (variable categórica) esta estructura es adecuada, al no estar haciendo operaciones con fechas tampoco será necesario pasar a formato fecha.
 
 ## Descripción general de los datos
 
@@ -278,7 +315,8 @@ if(knitr::is_latex_output()){
 ```
 
 A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
-Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.
+
+Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.  La distribución de frecuencias es, por tanto, muy diferente gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución.
 
 
 # Objetivos (por poner algo de momento)
@@ -310,7 +348,7 @@ Frecuencia_nombres
 
 El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.dim=c(5,3.5)}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
   filter(Decada == 2000, Sexo == "Hombre") %>% 
@@ -340,6 +378,7 @@ ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group
     color = "Nombre"
   ) +
   scale_x_continuous(breaks = seq(1930, 2020, by = 10)) +
+  expand_limits(y=30) + # Para que la etiqueta Fin de la dictadura franquista no se solape en el pdf
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
@@ -375,9 +414,16 @@ Nombres_nb_decada <- function(decada){
 
 unisex <- Nombres_nb() # Opción para todas las décadas
 
-# Los nombres unisex son un porcentaje muy bajo del total
-length(Nombres_nb())/length(unique(Nombres_tidy$Nombre))
+# Los nombres unisex son un porcentaje muy bajo del total (0.504%)
+porcentaje_nb <- 100*length(Nombres_nb())/length(unique(Nombres_tidy$Nombre))
+# Para mostrarlo en el texto posterior
+porcentaje_nb <- round(porcentaje_nb, digits = 3)
+porcentaje_nb <- paste0(porcentaje_nb,'%')
+```
 
+
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
+```{r echo = FALSE, fig.dim=c(2,2)}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
 cada_sexo_nb <- Nombres_tidy %>%
   filter(Nombre %in% unisex) %>%
