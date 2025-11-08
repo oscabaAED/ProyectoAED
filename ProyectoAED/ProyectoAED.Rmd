@@ -5,11 +5,10 @@ author:
   - name: Florencia Pellegrini
   - name: Lucía Benages Guijarro
 
-# document options
 journal: notspecified
 type: article
 status: submit
-# front matter
+
 simplesummary: |
   A Simple sumarry...
 abstract: |
@@ -45,7 +44,7 @@ p_load(stringr) # Manipulación de datos de tipo texto
 p_load(tidyr, dplyr) # Manejado de datos
 p_load(ggplot2, visdat) # Visualización
 p_load(patchwork) # Agrupación de plots
-p_load(knitr, kableExtra) # Para tablas
+p_load(knitr, kableExtra, flextable, gt, gtsummary) # Para tablas
 ```
 
 
@@ -202,13 +201,51 @@ vis_dat(Nombres_tidy) +
   Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura tidy será por tanto no solo más sencilla de manipular sino que también almacena la información de manera más eficiente.
 
 ## Descripción general de los datos
-Previamente a realizar el estudio deseado para este conjunto de datos resultará necesario conocer de manera general, sus características.
-```{r}
-Nombres_tidy %>% summary(.) %>% 
-  kable(caption = 'Información acerca de la frecuencia de nombres en la Província de Valencia por década en formato tidy') %>%
-  replace_na(' ')
+
+Previamente a realizar el estudio deseado para este conjunto de datos resultará necesario conocer de manera general, sus características.  
+```{r echo=FALSE}
+# Todos los paquetes para hacer tablas que he encontrado han tenido problemas para crear una tabla con summary()
+## creamos aquí una función que corrija el formato de la tabla y la haga dataframe para que aparezca bien en el documento
+summary_para_table <- function(df){
+  # Primero hay que aplicar summary por separado a cada elemento, ya que queremos editarlos más adelante
+  sumlis <- lapply(df, summary)
+  # Obtenemos la longitud máxima ya que luego editaremos los elementos cortos para que todos tengan el mismo número de filas en el dataframe
+  max_len <- max(sapply(sumlis, length))
+  
+  for(i in 1:length(sumlis)){
+    base <- sumlis[[i]]
+    if(is.numeric(base)){
+      sumlis[[i]] <- paste0(names(base),': ', round(base, digits=3))
+    } else{
+      sumlis[[i]] <- paste0(names(base),': ', base)
+    }
+    
+    # Editamos longitud de cada vector hasta que todos sean iguales, ponemos " " que aparecerá en blanco en la tabla
+    longitud_actual <- length(sumlis[[i]])
+    while(longitud_actual < max_len){
+      sumlis[[i]] <- c(sumlis[[i]] ," ")
+      longitud_actual <- longitud_actual+1
+    }
+  }
+  # Pasamos a formato de dataframe, con los cambios que hemos hecho lo hará en el formato correcto
+  df_summary <- data.frame(sumlis, check.names = FALSE)
+  return(df_summary)
+}
+# Obtenemos nuestra tabla
+k <- summary_para_table(Nombres_tidy)
+if(knitr::is_latex_output()){
+  # Para editar el tamaño de la tabla en el pdf (son muy grandes)
+  k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy",
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options="scale_down")
+} else{
+  k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy")
+}
+
 ```
 
+A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un pequeño (comparativamente) conjunto de nombres.
 
 
 # Análisis
@@ -269,8 +306,8 @@ ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group
 #print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
 ```
 
-También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
-```{r echo = FALSE}
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
+```{r echo = FALSE, fig.dim=c(2,2)}
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(){
   Nombres_tidy %>%
