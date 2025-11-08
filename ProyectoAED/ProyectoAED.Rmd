@@ -10,9 +10,9 @@ type: article
 status: submit
 
 simplesummary: |
-  A Simple sumarry...
+  El proyecto analiza la evolución de los nombres en la provincia de Valencia entre 1930 y 2020 utilizando datos del Instituto Nacional de Estadística (INE).Tras la transformación del conjunto en formato tidy, los resultados evidencian una mayor diversidad en la elección de nombres, la reducción de los compuestos y el resurgimiento de nombres valencianos tras la década de 1970.
 abstract: |
-  A single paragraph of about 200 words maximum...
+  Este trabajo presenta un análisis exploratorio de los patrones en la elección de nombres en la provincia de Valencia durante el periodo 1930–2020, utilizando los registros oficiales del Instituto Nacional de Estadística (INE). A partir de múltiples ficheros segmentados por década y sexo, se lleva a cabo un proceso de integración y depuración de los datos, reestructurándolos en formato tidy para su análisis cuantitativo y visual. El estudio examina la evolución temporal del número de nacimientos, la frecuencia relativa de los nombres, la diversidad y renovación del repertorio de nombres, así como la longitud media y la proporción de nombres compuestos. Los resultados ponen de manifiesto una tendencia hacia nombres más breves y variados, una disminución sostenida de los compuestos y un notable incremento de nombres de origen valenciano tras el fin de la dictadura franquista. Estos cambios evidencian la influencia de factores socioculturales y lingüísticos en la elección de los nombres a lo largo del último siglo.
   
 abbreviations:
   - short: Nac.
@@ -45,10 +45,7 @@ header-includes:
   - '\setlength{\headheight}{20pt}'
   - '\usepackage{graphicx}'
   - '\usepackage{float}'
-  - '\setkeys{Gin}{width=\linewidth,keepaspectratio}'
-  - '\makeatletter'
-  - '\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}'
-  - '\makeatother'
+
 ---
 
 # Introducción
@@ -69,8 +66,9 @@ p_load(tidyr, dplyr) # Manejado de datos
 p_load(ggplot2, visdat, viridis) # Visualización
 p_load(patchwork) # Agrupación de plots
 p_load(knitr, kableExtra) # Para tablas
+```
 
-
+```{r echo= FALSE}
 knitr::opts_chunk$set(
   fig.align = "center",
   out.width = "\\linewidth",
@@ -80,7 +78,6 @@ knitr::opts_chunk$set(
   comment = NA              # Quita los "##" de los outputs
 )
 ```
-
 
 ## Importación inicial de los datos  
 
