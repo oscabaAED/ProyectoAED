@@ -42,7 +42,7 @@ library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunq
 
 p_load(stringr) # Manipulación de datos de tipo texto
 p_load(tidyr, dplyr) # Manejado de datos
-p_load(ggplot2, visdat) # Visualización
+p_load(ggplot2, visdat, viridis) # Visualización
 p_load(patchwork) # Agrupación de plots
 p_load(knitr, kableExtra, flextable, gt, gtsummary) # Para tablas
 ```
@@ -248,6 +248,13 @@ A partir del sumario inicial mostrado previamente ya se puede identificar una ca
 Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.
 
 
+# Objetivos (por poner algo de momento)
+- Explorar la evolución temporal de la popularidad de nombres.
+- Comparar tendencias por género.
+- Analizar aparición y desaparición de nombres.
+- Estudiar la influencia de factores sociculturales.
+
+
 # Análisis
 
 ## Análisis univariante
@@ -278,7 +285,7 @@ Decada_2000 <- Nombres_tidy %>%
   group_by(Sexo)
 
 # Evolución de nombres a lo largo del tiempo
-nombres_seleccionados <- c("MARC", "JOAN", "VICENT")
+nombres_seleccionados <- c("MARC", "JOAN", "VICENT", "JOSEP")
 
 Nombres_evol_plot <- Nombres_tidy %>%
   filter(Nombre %in% nombres_seleccionados) %>%
@@ -286,6 +293,9 @@ Nombres_evol_plot <- Nombres_tidy %>%
   filter(!is.na(`Nac./1000`))
 
 ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+  geom_vline(xintercept = 1975, linetype = "dashed", color = "gray40", linewidth = 0.8) +
+  annotate("text", x = 1976, y = Inf, label = "Fin de la dictadura franquista",
+           hjust = 0, vjust = 1.5, color = "gray40", size = 3.5) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2.5) +
   labs(
@@ -581,6 +591,41 @@ plot_nacimientos / plot_variedad
 plot_compuestos / plot_longitud 
 plot_novedad / plot_desaparicion
 ```
+## Heatmap 25 nombres más populares a lo largo de las décadas
+```{r}
+top25_nombres <- Frecuencia_nombres %>%
+  slice(1:25) %>%
+  pull(Nombre)
+
+top25 <- Nombres_tidy %>%
+  filter(Nombre %in% top25_nombres, Decada != 2020)
+
+heatmap_top25 <- ggplot(
+  top25,
+  aes(x = factor(Decada),
+      y = reorder(Nombre, Nac.),
+      fill = Nac.)
+) +
+  geom_tile(color = "white") +
+  scale_fill_viridis(option = "D", direction = 1) +
+  labs(
+    title = "Popularidad de los 25 Nombres Más Frecuentes por Década",
+    subtitle = "Frecuencia total de nacimientos por nombre y década",
+    x = "Década",
+    y = "Nombre",
+    fill = "Frecuencia"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    panel.grid = element_blank()
+  )
+
+heatmap_top25
+```
+
 
 ## Análisis bivariante
 ```{r echo = FALSE}
@@ -664,4 +709,3 @@ ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
 ```
 
 # Conclusiones
-Aquí irá la conclusión
