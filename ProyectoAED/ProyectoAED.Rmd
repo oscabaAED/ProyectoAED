@@ -437,9 +437,7 @@ cada_sexo_nb <- Nombres_tidy %>%
 # Tabla con los resultados
 if(knitr::is_latex_output()){
   # Para añadirla al pdf la dividimos en 2 ya que es muy larga
-  kable(list(cada_sexo_nb[1:(nrow(cada_sexo_nb)/2),],  
-           matrix(numeric(), nrow=0, ncol=1),
-           cada_sexo_nb[ceiling(nrow(cada_sexo_nb)/2+1):nrow(cada_sexo_nb),]),
+  kable(cada_sexo_nb,
         caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
               format="latex", booktabs = TRUE) %>%
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
@@ -825,7 +823,7 @@ ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   geom_text(data=subset(ranking_nombres_clase, Nombre=="MARIA DE LOS ANGELES"),
             aes(label = "MARIA DE LOS ANGELES"), 
             nudge_y = 1400, size = 4, angle = 90) + 
-  expand_limits(y=5200) + 
+  expand_limits(y=c(-600,5200)) + 
   labs(title = "Ranking de Nombres de la Clase en la Década de 2000",
        x = NULL,
        y = "Número de Nacimientos") +
