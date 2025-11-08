@@ -46,6 +46,9 @@ header-includes:
   - \providecommand{\pandocbounded}[1]{#1}
   - \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
   - \makeatother
+  - \usepackage{graphicx}
+  - \usepackage{float} % para [H]
+  - \setkeys{Gin}{width=\linewidth,keepaspectratio} % toda imagen cabe en el ancho de texto
 ---
 
 # Introducción
@@ -66,6 +69,13 @@ p_load(tidyr, dplyr) # Manejado de datos
 p_load(ggplot2, visdat, viridis) # Visualización
 p_load(patchwork) # Agrupación de plots
 p_load(knitr, kableExtra) # Para tablas
+
+
+knitr::opts_chunk$set(
+  fig.align = "center",
+  out.width = "\\linewidth",   # respeta márgenes de la plantilla
+  fig.pos = "H"                # coloca la figura y reduce cortes
+)
 ```
 
 
