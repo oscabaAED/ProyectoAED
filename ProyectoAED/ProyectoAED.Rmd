@@ -418,9 +418,9 @@ Total_Nacimientos_Decada <- bind_rows(nacimientos_por_sexo, nacimientos_ambos) %
 plot_nacimientos <- grafico_evolucion(
   data = Total_Nacimientos_Decada %>% filter(Decada != "2020"),
   y_var = "TotalNacimientos",
-  y_lab = "Número Total de Nacimientos",
+  y_lab = "Total de Nacimientos",
   title = "Evolución del Número Total de Nacimientos",
-  subtitle = "Por década y género (1930-2020)",
+  subtitle = "Por década y género (1930-2010)",
 )
 
 
@@ -514,7 +514,7 @@ plot_variedad <- grafico_evolucion(
   y_var = "NombresDistintos",
   y_lab = "Nombres Distintos",
   title = "Evolución de la Variedad de Nombres Distintos",
-  subtitle = "Por década y género (1930-2020)"
+  subtitle = "Por década y género (1930-2010)"
 )
 
 
@@ -541,7 +541,7 @@ plot_novedad <- grafico_evolucion(
   y_var = "NuevosNombres",
   y_lab = "Nombres Nuevos",
   title = "Cantidad de Nombres Nuevos",
-  subtitle = "Por década y género (1930-2020)"
+  subtitle = "Por década y género (1930-2010)"
 )
 
 
@@ -572,9 +572,9 @@ Total_Nombres_Desaparecidos <- bind_rows(desaparecidos_por_sexo, desaparecidos_a
 plot_desaparicion <- grafico_evolucion(
   data = Total_Nombres_Desaparecidos,
   y_var = "NombresDesaparecidos",
-  y_lab = "Número de Nombres Desaparecidos",
+  y_lab = "Nombres Desaparecidos",
   title = "Nombres que Desaparecen por Década",
-  subtitle = "Nombres vistos por última vez en esa década (y que no reaparecen)",
+  subtitle = "Nombres vistos por última vez en esa década (1930-2010)",
 )
 
 plot_nacimientos / plot_variedad 
@@ -628,7 +628,9 @@ nombres <- sample_n(Nombres_tidy, 10)[,c('Nombre','Sexo')]
 Ranking <- Nombres_tidy %>%
   semi_join(nombres, by=c('Nombre','Sexo')) %>% # Conseguir el dataframe de los nombres elegidos
   group_by(Nombre, Sexo) %>%
-  summarise(`Nacidos desde 1930`=sum(Nac., na.rm = TRUE), MaximaFreq=max(`Nac./1000`, na.rm = TRUE)) %>%
+  summarise(`Nacidos desde 1930`=sum(Nac., na.rm = TRUE),
+            MaximaFreq=max(`Nac./1000`, na.rm = TRUE),
+            .groups = "drop") %>%
   left_join(Nombres_tidy, by = c("MaximaFreq" = "Nac./1000", "Nombre", "Sexo")) %>%
   rename(`Década de máxima frecuencia`=Decada) %>%
   select(Nombre, Sexo, `Nacidos desde 1930`, `Década de máxima frecuencia`) %>% 
