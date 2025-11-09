@@ -209,7 +209,6 @@ No obstante también podemos observar claramente otra característica principal 
 
 Ambos problemas, podrán resolverse transformando este dataframe resultante a formato _tidy_, facilitando así su manipulación y análisis gráfico. 
 
-
 ## Convertir el dataframe a formato _tidy_
 
 El dataframe `Nombres` contiene inicialmente múltiples columnas asociadas a cada década, lo que dificulta su manipulación y análisis. Para obtener una estructura más eficiente, se procede a su transformación a formato _tidy_ mediante funciones de los paquetes `tidyr` y `dplyr.` Esta conversión a formato largo permite condensar estas múltiples columnas, quedando variables más claras: Nombre, Sexo, Década, Nac. y Nac./1000.  
@@ -267,13 +266,13 @@ Podemos comprobar que al tranformar el dataframe hemos eliminado los registros q
 
 Cabe destacar también que la nueva variable generada para las décadas es de tipo carácter, dado que para nuestro análisis serán utilizadas como clasificador (variable categórica) esta estructura es adecuada para los objetivos del análisis, al no estar haciendo operaciones con fechas tampoco será necesario pasar a formato fecha.
 
+# Objetivos 
 
-# Objetivos (añadir algo más cuando lo acabemos)
-Los objetivos principales de este trabajo son los siguientes:
+Los principales objetivos de este trabajo son los siguientes:
 
 - Analizar la evolución temporal de la popularidad de los nombres en la provincia de Valencia.
 
-- Comparar las tendencias entre los distintos géneros.
+- Comparar los patrones y las tendencias entre los distintos géneros.
 
 - Identificar la aparición y desaparición de nombres a lo largo del tiempo.
 
@@ -473,9 +472,6 @@ Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./
 knitr::include_graphics("../figs/NombresValencianos.png")
 ```
 
-
-
-
 ```{r echo = FALSE}
 # Nombres ambos sexos
 # Función para ver qué nombres aparecen en ambos sexos
@@ -508,7 +504,7 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
+En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos géneros.
 
 ```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
@@ -540,21 +536,22 @@ if(knitr::is_latex_output()){
 
 
 ## Análisis bivariante
-A la hora de trabajar con nombres encontramos un muy claro sesgo de género, como hemos podido comprobar anteriormente al buscar nombres unisex (los encontramos en baja proporción y la mayoría de ellos tienen gran sesgo).  
 
-Por ello es conveniente en la mayoría de los casos realizar el análisis de nuestro conjunto de datos dividiendo los resultados por sexo, como haremos a continuación.
+A la hora de trabajar con nombres encontramos un claro sesgo de género, como se ha comprobado anteriormente al analizar los nombres unisex, cuya proporción es reducida y su distribución tiende a concentrarse en uno de los dos sexos. 
+
+Por ello es conveniente realizar el análisis del conjunto de datos dividiendo los resultados por sexo, como haremos a continuación.
 
 ### Gráficos tendencias nombres
 
-Se generan diversas representaciones visuales para analizar la evolución temporal de los datos:
+Para continuar con el estudio de la evolución temporal de los datos, se generan diversas representaciones visuales, las cuales se detallan a continuación.
 
-- Volumen de nacimientos: Permite identificar fluctuaciones demográficas, como el baby boom o periodos de descenso en la natalidad.
+- Volumen de nacimientos: Representa la evolución del número total de nacimientos por década y sexo entre 1930 y 2010. Este gráfico permite identificar variaciones demográficas significativas, como el incremento sostenido de la natalidad hasta los años setenta (coincidente con el baby boom) y su posterior descenso durante las décadas siguientes.
 
-- Características de los nombres: Analiza cambios estilísticos, como la evolución de la longitud media y la porcentaje de nombres compuestos respecto al total. Esto revela tendencias culturales, evidenciando el abandono de nombres tradicionales largos en favor de opciones más cortas.
+- Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
 
-- Diversidad de nombres: Se observa la tendencia en la cantidad de nombres distintos utilizados a lo largo de las décadas, indicando una tendencia hacia una mayor heterogeneidad en la elección de estos.
+- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos cambios revelan tendencias culturales, evidenciando el abandono de nombres largos y tradicionales en favor de opciones más breves.
 
-- Renovación: Gráficos sobre la aparición de nuevos nombres y la desaparición de aquellos que quedan en desuso con el paso del tiempo.  
+- Renovación: Estudia la aparición y la desaparición de nombres por década. Por un lado, el número de nuevas incorporaciones tiene máximos locales en 1960 y los años 2000. Consecuentemente, tras un periodo de mayor creatividad, las siguientes decadas aumenta la cantidad de nombres que caen en desuso, teniendo picos en los años 1970 y 2010.
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
@@ -737,7 +734,7 @@ plot_novedad <- grafico_evolucion(
   data = Nombres_Nuevos %>% filter(Decada != "2020"),
   y_var = "NuevosNombres",
   y_lab = "Nombres Nuevos",
-  title = "Cantidad de Nombres Nuevos",
+  title = "Aparición de Nombres Nuevos",
   subtitle = "Por década y género (1930-2010)"
 )
 
@@ -789,7 +786,7 @@ plot_novedad / plot_desaparicion
 
 ### Nombres más populares con división por década y sexo
 
-En relación con el primer y segundo objetivo, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
+Para completar el análisis anterior, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
 
 Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan los resultados correspondientes a los años 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
 
@@ -864,13 +861,15 @@ for (dec in c("1930", "2000", "2020")) {
 
 ```
 
+### Conclusiones
 
-# Comparación de popularidad de un grupo de nombres
-
-Podemos aplicar el mismo procedimiento que hemos utilizado para evaluar características generales para extraer información de una determinada muestra de nombres de interés.  
-Como curiosidad, hemos escogido para este proyecto utilizar como muestra los nombres de nuestros compañeros, y extraer datos acerca de la frecuencia para la década en la que nacieron la mayoría de ellos (2000).
 
 ```{r echo = FALSE}
+# Comparación de popularidad de un grupo de nombres
+
+# Podemos aplicar el mismo procedimiento que hemos utilizado para evaluar características generales para extraer información de una determinada muestra de nombres de interés.  
+# Como curiosidad, hemos escogido para este proyecto utilizar como muestra los nombres de nuestros compañeros, y extraer datos acerca de la frecuencia para la década en la que nacieron la mayoría de ellos (2000).
+
 #Ranking nombres de clase 
 
 nombres_clase <- toupper(c("Adrian", "Adriana", "Alvaro", "Ana", "Axel", "Azahara", "Carlos", "Clara", "Cristhian", "Fabian", "Florencia", "Hector", "Irene", "Iyán", "Javier", "Jeremy", "Joan", "Jose", "Juan", "Lucia",  "María de los Ángeles", "Mario", "Oscar", "Pablo", "Pol", "An"))
@@ -926,4 +925,4 @@ ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
 #suppressMessages(ggsave("../figs/RankingClase.png"))
 ```
 
-### Conclusiones
+
