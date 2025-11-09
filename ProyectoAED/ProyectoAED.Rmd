@@ -472,7 +472,7 @@ knitr::include_graphics("../figs/NombresValencianos.png")
 
 
 También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
-```{r echo = FALSE, fig.dim=c(2,2)}
+```{r echo = FALSE}
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(){
   Nombres_tidy %>%
@@ -503,7 +503,7 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-```{r echo = FALSE, fig.dim=c(2,2)}
+```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
 cada_sexo_nb <- Nombres_tidy %>%
   filter(Nombre %in% unisex) %>%
@@ -771,6 +771,14 @@ plot_novedad / plot_desaparicion
 ```
 
 
+```{r echo = FALSE}
+# Opción de guardar en un comentario ya que no es necesaria en todas las ejecuciones
+#suppressMessages(ggsave('../figs/Nacimientos-Variedad.png', plot_nacimientos / plot_variedad))
+#suppressMessages(ggsave('../figs/Compuestos-Longitud.png', plot_compuestos / plot_longitud))
+#suppressMessages(ggsave('../figs/Novedad-Desaparicion.png', plot_novedad / plot_desaparicion))
+```
+
+
 ### Nombres de máxima popularidad en función de década y sexo
 
 ```{r echo = FALSE}
@@ -810,6 +818,8 @@ lista_df_decadas <- Nom_populares %>%
 
 lista_graficos_finales <- list()
 
+
+
 for (df_decada in lista_df_decadas) {
   decada <- unique(df_decada$Decada)
   
@@ -828,6 +838,9 @@ for (df_decada in lista_df_decadas) {
           plot.subtitle = element_text(hjust= 0.5))
   
   print(g_actual)
+  # Para guardar las gráficas, estará comentado cuando no lo usemos
+  #archivo <- paste0('../figs/5Populares',decada,'.png')
+  #suppressMessages(ggsave(archivo, g_actual))
 }
 ```
 Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religiosos, pero a partir de 1990 esta tendencia decrece.
@@ -889,7 +902,8 @@ ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   theme(plot.title = element_text(face = "bold", hjust = 0.5), axis.text.x = element_blank(),
     axis.ticks.x = element_blank())
 
-ggsave("../figs/RankingClase.png")
+# Para guardar la figura
+#suppressMessages(ggsave("../figs/RankingClase.png"))
 ```
 
 # Conclusiones
