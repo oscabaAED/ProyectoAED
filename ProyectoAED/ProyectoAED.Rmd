@@ -200,7 +200,7 @@ vis_Nombres <- vis_dat(Nombres) + labs(
 # Para que se vea bien en el pdf añadiremos la figura como imagen
 ```
 
-```{r, echo=FALSE, out.width='75%', fig.align='center'}
+```{r, echo=FALSE, out.width='75%', fig.align='center', fig.cap="Visualización de la estructura inicial de los datos."}
 knitr::include_graphics("../figs/VisdatNombresSucio.png")
 ```
 
@@ -258,7 +258,7 @@ vis_Nombres_tidy <- vis_dat(Nombres_tidy) + labs(
 #suppressMessages(ggsave('../figs/VisdatNombresTidy.png', vis_Nombres_tidy))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Visualización de la estructura de los datos en formato tidy."}
 knitr::include_graphics("../figs/VisdatNombresTidy.png")
 ```
 
@@ -415,7 +415,7 @@ heatmap_top25 <- ggplot(
 #suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Popularidad de los 25 nombres más frecuentes por década."}
 knitr::include_graphics("../figs/Heatmap25.png")
 ```
 
@@ -468,7 +468,7 @@ Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./
 #suppressMessages(ggsave('../figs/NombresValencianos.png', Plot_nombres_valencianos))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Evolución de nombres valencianos populares."}
 knitr::include_graphics("../figs/NombresValencianos.png")
 ```
 
@@ -765,10 +765,24 @@ plot_desaparicion <- grafico_evolucion(
   title = "Nombres que Desaparecen por Década",
   subtitle = "Nombres vistos por última vez en esa década (1930-2010)",
 )
+```
 
-plot_nacimientos / plot_variedad 
-plot_compuestos / plot_longitud 
-plot_novedad / plot_desaparicion
+
+```{r echo = FALSE, fig.cap="Total de nacimientos (A) y variedad de nombres distintos (B) por década."}
+(plot_nacimientos / plot_variedad) + 
+  plot_annotation(tag_levels = 'A')
+```
+
+
+```{r echo = FALSE, fig.cap="Porcentaje de nombres compuestos (A) y longitud promedio de los nombres (B) por década."}
+(plot_compuestos / plot_longitud) + 
+  plot_annotation(tag_levels = 'A')
+```
+
+
+```{r echo = FALSE, fig.cap="Aparición de nuevos nombres (A) y desaparición de nombres (B) por década."}
+(plot_novedad / plot_desaparicion) + 
+  plot_annotation(tag_levels = 'A')
 ```
 
 
@@ -843,11 +857,14 @@ for (df_decada in lista_df_decadas) {
           plot.title = element_text(face= 'bold', hjust= 0.5), 
           plot.subtitle = element_text(hjust= 0.5))
   
-   # 🔹 Guardamos todas las gráficas en una lista
+   # Guardamos todas las gráficas en una lista
   lista_graficos_finales[[as.character(decada)]] <- g_actual
 }
+```
 
-# 🔹 Mostrar solo las gráficas de 1930, 2000 y 2020
+
+```{r echo = FALSE, fig.cap="Top 5 nombres más populares en una determinada década por sexo."}
+# Mostrar solo las gráficas de 1930, 2000 y 2020
 for (dec in c("1930", "2000", "2020")) {
   if (dec %in% names(lista_graficos_finales)) {
     print(lista_graficos_finales[[dec]])
@@ -900,7 +917,7 @@ ranking_tabla <- ranking_nombres_clase %>%
 ```
 
 
-```{r echo = FALSE, results='hide'}
+```{r echo = FALSE, results='hide', fig.cap="Ranking de nombres de la clase en la década de los 2000."}
 # Gráfico del ranking de la clase, ponemos results hide porque sólo nos interesa tenerlo para la presentación
 ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   geom_col(fill = "steelblue") +
