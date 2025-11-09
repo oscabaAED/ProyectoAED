@@ -443,12 +443,12 @@ Nombres_evol_plot <- Nombres_tidy %>%
   mutate(Decada = as.numeric(Decada)) %>%
   filter(!is.na(`Nac./1000`))
 
-Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, shape = Nombre, group = Nombre)) +
   geom_vline(xintercept = 1975, linetype = "dashed", color = "gray40", linewidth = 0.8) +
   annotate("text", x = 1976, y = Inf, label = "Fin de la dictadura franquista",
            hjust = 0, vjust = 1.5, color = "gray40", size = 3.5) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2.5) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
   labs(
     title = "Evolución de Nombres Valencianos Populares",
     subtitle = "Frecuencia por mil nacimientos (1930-2020)",
@@ -516,14 +516,9 @@ cada_sexo_nb <- Nombres_tidy %>%
   group_by(Nombre) %>%
   summarise(`% Hombres`=round(Hombre*100/(Hombre+Mujer),digits=2), `% Mujeres`=round(Mujer*100/(Hombre+Mujer),digits=2))
 
-
 # Tabla con los resultados
 if(knitr::is_latex_output()){
-  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
-  mitad <- 1:floor(nrow(cada_sexo_nb)/2)
-  kable(list(cada_sexo_nb[mitad,],  
-           matrix(numeric(), nrow=0, ncol=1),
-           cada_sexo_nb[-mitad, 1:2]),
+  kable(cada_sexo_nb,
         caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
               format="latex", booktabs = TRUE) %>%
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
@@ -532,7 +527,6 @@ if(knitr::is_latex_output()){
   print(cada_sexo_nb)
   #cada_sexo_nb %>% kable(caption = 'Nombres unisex con su correspondiente porcentaje para cada género')
 }
-
 ```
 
 
@@ -789,8 +783,6 @@ plot_novedad / plot_desaparicion
 
 Para completar el análisis anterior, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
 
-Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan los resultados correspondientes a los años 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
-
 ```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
 Nom_populares <- Nombres_tidy %>%
@@ -820,7 +812,12 @@ if(knitr::is_latex_output()){
   # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
   print(Nom_populares_tabla)
 }
+```
 
+Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan gráficamente los resultados correspondientes a las décadas de 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
+
+```{r echo = FALSE}
+# Gráficas
 lista_df_decadas <- Nom_populares %>%
   group_by(Decada) %>%
   group_split(.keep = TRUE)
