@@ -328,7 +328,7 @@ if(knitr::is_latex_output()){
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
                 font_size = 8)
 } else{
-  # En el propio rmarkdown creo que aparece mejor el formato pr defecto
+  # En el propio rmarkdown creo que aparece mejor el formato por defecto
   print(k)
 }
  
@@ -366,7 +366,7 @@ if(knitr::is_latex_output()){
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
                 font_size = 8)
 } else{
-  # En el propio rmarkdown creo que aparece mejor el formato pr defecto
+  # En el propio rmarkdown creo que aparece mejor el formato por defecto
   print(head(Frecuencia_nombres))
 }
 
@@ -530,17 +530,10 @@ A la hora de trabajar con nombres encontramos un claro sesgo de género, como se
 
 Por ello es conveniente realizar el análisis del conjunto de datos dividiendo los resultados por sexo, como haremos a continuación.
 
-### Gráficos tendencias nombres
+### Evolución de los nombres
 
 Para continuar con el estudio de la evolución temporal de los datos, se generan diversas representaciones visuales, las cuales se detallan a continuación.
 
-- Volumen de nacimientos: Representa la evolución del número total de nacimientos por década y sexo entre 1930 y 2010. Este gráfico permite identificar variaciones demográficas significativas, como el incremento sostenido de la natalidad hasta los años setenta (coincidente con el baby boom) y su posterior descenso durante las décadas siguientes.
-
-- Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
-
-- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
-
-- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
@@ -758,19 +751,21 @@ plot_desaparicion <- grafico_evolucion(
 )
 ```
 
+- Volumen de nacimientos: Representa la evolución del número total de nacimientos por década y sexo entre 1930 y 2010. Este gráfico permite identificar variaciones demográficas significativas, como el incremento sostenido de la natalidad hasta los años setenta (coincidente con el baby boom) y su posterior descenso durante las décadas siguientes.
 
+- Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
 ```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Total de nacimientos (A) y variedad de nombres distintos (B) por década."}
 (plot_nacimientos / plot_variedad) + 
   plot_annotation(tag_levels = 'A')
 ```
 
-
+- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
 ```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Porcentaje de nombres compuestos (A) y longitud promedio de los nombres (B) por década."}
 (plot_compuestos / plot_longitud) + 
   plot_annotation(tag_levels = 'A')
 ```
 
-
+- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 ```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Aparición de nuevos nombres (A) y desaparición de nombres (B) por década."}
 (plot_novedad / plot_desaparicion) + 
   plot_annotation(tag_levels = 'A')
@@ -792,7 +787,7 @@ Para completar el análisis de nombres populares realizado anteriormente, se ela
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
 Nom_populares <- Nombres_tidy %>%
   group_by(Sexo, Decada) %>%
-  arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de personas nacidas con ese nombre)
+  arrange(desc(Nac.)) %>% # Ordena descendentemente (cantidad de personas nacidas con ese nombre)
   slice(1:5) %>%
   ungroup()
 
@@ -872,7 +867,7 @@ El análisis de los registros del Instituto Nacional de Estadística para la pro
 
 A lo largo del periodo analizado se aprecia una clara transformación en los patrones de denominación. Desde mediados del siglo XX se incrementa la diversidad de nombres y disminuye de forma sostenida el uso de nombres compuestos, acompañada por una reducción progresiva en la longitud media. Estos cambios reflejan una tendencia cultural hacia nombres más breves, simples y variados. Asimismo, a partir de la década de 1980 se observa un notable aumento de nombres de origen valenciano, asociado al proceso de recuperación lingüística y cultural posterior al final de la dictadura franquista.
 
-Los resultados también muestran que los nombres unisex constituyen una proporción marginal dentro del conjunto y, en la mayoría de los casos, su uso se concentra de manera pronunciada en uno de los dos sexos. En conjunto, los gráficos analizados confirman un cambio gradual y sostenido en las preferencias de la población: el repertorio de nombres ha pasado de ser tradicional y homogéneo a ser más diverso, moderno y representativo de la variedad cultural de la sociedad valenciana
+Los resultados también muestran que los nombres unisex constituyen una proporción marginal dentro del conjunto y, en la mayoría de los casos, su uso se concentra de manera pronunciada en uno de los dos sexos. En conjunto, los gráficos analizados confirman un cambio gradual y sostenido en las preferencias de la población: el repertorio de nombres ha pasado de ser tradicional y homogéneo a ser más diverso, moderno y representativo de la variedad cultural de la sociedad valenciana.
 
 ```{r echo = FALSE}
 # Este apartado era más una curiosidad, interesante a la hora de enseñar resultados a la clase pero no aporta demasiado a la elaboración del trabajo. Por ello y por espacio no vamos a incluir este estudio en el trabajo, pero sí en la presentación
