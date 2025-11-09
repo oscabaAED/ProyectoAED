@@ -537,13 +537,13 @@ Por ello es conveniente realizar el análisis del conjunto de datos dividiendo l
 
 Para continuar con el estudio de la evolución temporal de los datos, se generan diversas representaciones visuales, las cuales se detallan a continuación.
 
-- Volumen de nacimientos: Representa la evolución del número total de nacimientos por década y sexo entre 1930 y 2010. Este gráfico permite identificar variaciones demográficas significativas, como el incremento sostenido de la natalidad hasta los años setenta (coincidente con el baby boom) y su posterior descenso durante las décadas siguientes.
+- Volumen de nacimientos: Representa la evolución del número total de nacimientos por década y sexo entre 1930 y 2010 _(figura 5A)_. Este gráfico permite identificar variaciones demográficas significativas, como el incremento sostenido de la natalidad hasta los años setenta (coincidente con el baby boom) y su posterior descenso durante las décadas siguientes.
 
-- Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
+- Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década _(figura 5B)_. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
 
-- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
+- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos _(figura 6A)_ y la longitud media de los nombres _(figura 6B)_ respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
 
-- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
+- Renovación: Estudia la aparición _(figura 7A)_ y la desaparición _(figura 7B)_ de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
