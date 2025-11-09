@@ -200,7 +200,7 @@ vis_Nombres <- vis_dat(Nombres) + labs(
 # Para que se vea bien en el pdf añadiremos la figura como imagen
 ```
 
-```{r, echo=FALSE, out.width='85%', fig.align='center'}
+```{r, echo=FALSE, out.width='75%', fig.align='center'}
 knitr::include_graphics("../figs/VisdatNombresSucio.png")
 ```
 
@@ -259,7 +259,7 @@ vis_Nombres_tidy <- vis_dat(Nombres_tidy) + labs(
 #suppressMessages(ggsave('../figs/VisdatNombresTidy.png', vis_Nombres_tidy))
 ```
 
-```{r, echo=FALSE, out.width='70%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center'}
 knitr::include_graphics("../figs/VisdatNombresTidy.png")
 ```
 
@@ -347,7 +347,7 @@ En consecuencia, el conjunto de datos presenta una distribución frecuencial no 
 
 ### Nombres más populares y su evolución temporal
 
-Para complementar este análisis, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total, con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020.
+Nuestros datos están divididos por década, pero podemos combinarlos con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020. Para ello, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total.
 
 En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los seis nombres más populares del periodo analizado como muestra representativa.
 
@@ -518,13 +518,15 @@ cada_sexo_nb <- Nombres_tidy %>%
   summarise(Total=sum(Nac., na.rm = TRUE), .groups = "drop_last") %>%
   pivot_wider(names_from = Sexo, values_from = Total) %>%
   group_by(Nombre) %>%
-  summarise(`% Hombres`=round(Hombre*100/(Hombre+Mujer),2), `% Mujeres`=round(Mujer*100/(Hombre+Mujer),2))
-
+  summarise(`% Hombres`=round(Hombre*100/(Hombre+Mujer),digits=2), `% Mujeres`=round(Mujer*100/(Hombre+Mujer),digits=2))
 
 # Tabla con los resultados
 if(knitr::is_latex_output()){
   # Para añadirla al pdf la dividimos en 2 ya que es muy larga
-  kable(cada_sexo_nb,
+  mitad <- 1:floor(nrow(cada_sexo_nb)/2)
+  kable(list(cada_sexo_nb[mitad,],  
+           matrix(numeric(), nrow=0, ncol=1),
+           cada_sexo_nb[-mitad, 1:2]),
         caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
               format="latex", booktabs = TRUE) %>%
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
