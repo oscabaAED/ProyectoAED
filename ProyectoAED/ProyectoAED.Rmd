@@ -520,9 +520,7 @@ cada_sexo_nb <- Nombres_tidy %>%
 if(knitr::is_latex_output()){
   # Para añadirla al pdf la dividimos en 2 ya que es muy larga
   mitad <- 1:floor(nrow(cada_sexo_nb)/2)
-  kable(list(cada_sexo_nb[mitad,],  
-           matrix(numeric(), nrow=0, ncol=1),
-           cada_sexo_nb[-mitad, 1:2]),
+  kable(cada_sexo_nb,
         caption = 'Nombres unisex con su correspondiente porcentaje para cada género',
               format="latex", booktabs = TRUE) %>%
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F)
