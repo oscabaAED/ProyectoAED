@@ -347,83 +347,6 @@ En consecuencia, el conjunto de datos presenta una distribución frecuencial no 
 
 ### Nombres más populares y su evolución temporal
 
-En relación con el primer y segundo objetivo, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
-
-Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan los resultados correspondientes a los años 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
-
-```{r echo = FALSE}
-#Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
-Nom_populares <- Nombres_tidy %>%
-  group_by(Sexo, Decada) %>%
-  arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de personas nacidas con ese nombre)
-  slice(1:5) %>%
-  ungroup()
-
-# Para organizar mejor la tabla creamos otra variable
-
-Nom_populares_tabla <- Nom_populares %>% select(Decada, Sexo, Nombre) %>%
-  group_by(Decada, Sexo) %>%
-  mutate(Posicion = row_number()) %>%
-  ungroup() %>%
-  pivot_wider(names_from = Posicion, values_from = Nombre) %>%
-  mutate('5 nombres más populares (de mayor a menor)' = paste(`1`,`2`,`3`,`4`,`5`, sep=", ")) %>%
-  select(Decada, Sexo, `5 nombres más populares (de mayor a menor)`)
-
-# Mostramos la tabla con el resultado para nombres populares
-if(knitr::is_latex_output()){
-  kable(Nom_populares_tabla,
-        caption = 'Cinco nombres más populares por década y sexo',
-              format="latex", booktabs = TRUE) %>%
-  kable_styling(latex_options=c("scale_down","hold_position"), 
-                full_width = F, font_size = 8)
-} else{
-  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
-  print(Nom_populares_tabla)
-}
-
-lista_df_decadas <- Nom_populares %>%
-  group_by(Decada) %>%
-  group_split(.keep = TRUE)
-
-lista_graficos_finales <- list()
-
-
-
-for (df_decada in lista_df_decadas) {
-  decada <- unique(df_decada$Decada)
-  
-  g_actual <- ggplot(data = df_decada, 
-                     aes(x = reorder(Nombre, Nac.), y= Nac.)) + 
-    geom_col(aes(fill=Sexo)) + 
-    geom_text(aes(label= Nac.), vjust= -0.5, size= 2.5) + 
-    facet_wrap(~Sexo, scales= 'free_x') + 
-    labs(title= 'Top 5 nombres más populares por sexo', 
-         subtitle= paste('Decada de', decada, 'en la Provincia de Valencia'), 
-         x= NULL,
-         y = 'Numero de nacimientos') + 
-    theme_light() + 
-    theme(axis.text.x = element_text(angle = 45, hjust= 1), 
-          plot.title = element_text(face= 'bold', hjust= 0.5), 
-          plot.subtitle = element_text(hjust= 0.5))
-  
-   # 🔹 Guardamos todas las gráficas en una lista
-  lista_graficos_finales[[as.character(decada)]] <- g_actual
-}
-
-# 🔹 Mostrar solo las gráficas de 1930, 2000 y 2020
-for (dec in c("1930", "2000", "2020")) {
-  if (dec %in% names(lista_graficos_finales)) {
-    print(lista_graficos_finales[[dec]])
-  }
-}
-  # Para guardar las gráficas, estará comentado cuando no lo usemos
-  #archivo <- paste0('../figs/5Populares',decada,'.png')
-  #suppressMessages(ggsave(archivo, g_actual))
-
-```
-
-Para complementar este análisis, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total, con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020.
-
 En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los seis nombres más populares del periodo analizado como muestra representativa.
 
 ```{r echo = FALSE}
@@ -860,6 +783,84 @@ plot_novedad / plot_desaparicion
 #suppressMessages(ggsave('../figs/Novedad-Desaparicion.png', plot_novedad / plot_desaparicion))
 ```
 
+### Nombres más populares con división por década y sexo
+
+En relación con el primer y segundo objetivo, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
+
+Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan los resultados correspondientes a los años 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
+
+```{r echo = FALSE}
+#Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
+Nom_populares <- Nombres_tidy %>%
+  group_by(Sexo, Decada) %>%
+  arrange(desc(Nac.)) %>% #ordena descendentemente (cantidad de personas nacidas con ese nombre)
+  slice(1:5) %>%
+  ungroup()
+
+# Para organizar mejor la tabla creamos otra variable
+
+Nom_populares_tabla <- Nom_populares %>% select(Decada, Sexo, Nombre) %>%
+  group_by(Decada, Sexo) %>%
+  mutate(Posicion = row_number()) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Posicion, values_from = Nombre) %>%
+  mutate('5 nombres más populares (de mayor a menor)' = paste(`1`,`2`,`3`,`4`,`5`, sep=", ")) %>%
+  select(Decada, Sexo, `5 nombres más populares (de mayor a menor)`)
+
+# Mostramos la tabla con el resultado para nombres populares
+if(knitr::is_latex_output()){
+  kable(Nom_populares_tabla,
+        caption = 'Cinco nombres más populares por década y sexo',
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), 
+                full_width = F, font_size = 8)
+} else{
+  # En el Rmarkdown creo que se visualiza mejor con el formato por defecto
+  print(Nom_populares_tabla)
+}
+
+lista_df_decadas <- Nom_populares %>%
+  group_by(Decada) %>%
+  group_split(.keep = TRUE)
+
+lista_graficos_finales <- list()
+
+
+
+for (df_decada in lista_df_decadas) {
+  decada <- unique(df_decada$Decada)
+  
+  g_actual <- ggplot(data = df_decada, 
+                     aes(x = reorder(Nombre, Nac.), y= Nac.)) + 
+    geom_col(aes(fill=Sexo)) + 
+    geom_text(aes(label= Nac.), vjust= -0.5, size= 2.5) + 
+    facet_wrap(~Sexo, scales= 'free_x') + 
+    labs(title= 'Top 5 nombres más populares por sexo', 
+         subtitle= paste('Decada de', decada, 'en la Provincia de Valencia'), 
+         x= NULL,
+         y = 'Numero de nacimientos') + 
+    theme_light() + 
+    theme(axis.text.x = element_text(angle = 45, hjust= 1), 
+          plot.title = element_text(face= 'bold', hjust= 0.5), 
+          plot.subtitle = element_text(hjust= 0.5))
+  
+   # 🔹 Guardamos todas las gráficas en una lista
+  lista_graficos_finales[[as.character(decada)]] <- g_actual
+}
+
+# 🔹 Mostrar solo las gráficas de 1930, 2000 y 2020
+for (dec in c("1930", "2000", "2020")) {
+  if (dec %in% names(lista_graficos_finales)) {
+    print(lista_graficos_finales[[dec]])
+  }
+}
+  # Para guardar las gráficas, estará comentado cuando no lo usemos
+  #archivo <- paste0('../figs/5Populares',decada,'.png')
+  #suppressMessages(ggsave(archivo, g_actual))
+
+```
+
+
 # Comparación de popularidad de un grupo de nombres
 
 Podemos aplicar el mismo procedimiento que hemos utilizado para evaluar características generales para extraer información de una determinada muestra de nombres de interés.  
@@ -893,7 +894,8 @@ ranking_tabla <- ranking_nombres_clase %>%
   mutate(Nacimientos = as.character(Nacimientos)) %>%
   mutate(Nacimientos=str_replace_all(Nacimientos,'^0','0-4'))
 
-ranking_tabla
+# Mejor mostrar tan solo el gráfico, la tabla ocupa bastante
+#ranking_tabla
 ```
 
 
