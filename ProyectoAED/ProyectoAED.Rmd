@@ -59,11 +59,11 @@ Cabe destacar que los datos proceden del censo anual de población a fecha 01/01
 ## Cargar librerías a utilizar
 Para el análisis de los datos utilizaremos las librerías indicadas en la siguiente tabla.  
 
-| Uso                            |              Librerias              |
+| Uso                            |              Librerías              |
 |--------------------------------|:-----------------------------------:|
-| Importar el resto de librerias |                pacman               |
+| Importar el resto de librerías |                pacman               |
 | Manejo de datos                |             dplyr, tidyr            |
-| Visualizacion                  | ggplot2, visdat, viridis, patchwork |
+| Visualización                  | ggplot2, visdat, viridis, patchwork |
 | Tablas                         | kable, kableExtra                   |
 
 ```{r echo=FALSE}
@@ -87,7 +87,7 @@ knitr::opts_chunk$set(
 
 ## Importación inicial de los datos  
 
-Para gestionar la información dispersa en múltiples archivos es necesario leer cada fichero .csv individualmente, asegurandonos de hacerlo con la codificación correcta (Windows-1252 en este caso). A partir del nombre de cada archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
+Para gestionar la información dispersa en múltiples archivos es necesario leer cada fichero .csv individualmente con la codificación correcta (Windows-1252 en este caso). A partir del nombre de cada archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
 
 Originalmente, cada archivo contiene tres variables:  
 
@@ -95,7 +95,7 @@ Originalmente, cada archivo contiene tres variables:
 
 - Total: Número total de nacimientos con ese nombre en esa década específica (frecuencia absoluta).  
 
-- Por mil ‰: Frecuencia relativa del nombre por cada mil nacimientos.  
+- Por mil %: Frecuencia relativa del nombre por cada mil nacimientos.  
 
 Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (`Nombres`) utilizando la columna `Nombre` como clave común, obteniendo así un conjunto estructurado en formato _tidy_ que permite un análisis más flexible.  
 
@@ -278,14 +278,6 @@ Los principales objetivos de este trabajo son los siguientes:
 
 - Estudiar la influencia de factores socioculturales y lingüísticos en la elección de nombres.
 
-
-<!--# Objetivos 
-<!-- 1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado. -->
-<!-- 2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas. -->
-<!-- 3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo. -->
-<!-- 4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica. -->
-
-
 # Análisis
 
 ## Análisis univariante
@@ -340,7 +332,7 @@ if(knitr::is_latex_output()){
  
 ```
 
-A partir de dicho sumario se identifica una característica fundamental del conjunto de datos: la distribución frecuencial presenta una elevada cantidad de nombres con baja incidencia, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+A partir de dicho resumen se identifica una característica fundamental del conjunto de datos: la distribución frecuencial presenta una elevada cantidad de nombres con baja incidencia, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
 En consecuencia, el conjunto de datos presenta una distribución frecuencial no gaussiana, caracterizada por una fuerte concentración de nacimientos en un número reducido de nombres y una gran cantidad de nombres a baja frecuencia. Por este motivo, no es adecuado usar las técnicas convencionales, adaptadas a esta distribución. En su lugar, se emplean métodos exploratorios y visuales que permitan captar adecuadamente la asimetría y las tendencias en el conjunto de datos.
 
@@ -378,7 +370,7 @@ if(knitr::is_latex_output()){
 
 ```
 
-A partir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se expone a continuación.  
+A partir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos únicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se expone a continuación.  
 
 ```{r, echo=FALSE}
 top25_nombres <- Frecuencia_nombres %>%
@@ -504,7 +496,7 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos géneros.
+En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos sexos.
 
 ```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
@@ -544,9 +536,9 @@ Para continuar con el estudio de la evolución temporal de los datos, se generan
 
 - Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
 
-- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos cambios revelan tendencias culturales, evidenciando el abandono de nombres largos y tradicionales en favor de opciones más breves.
+- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
 
-- Renovación: Estudia la aparición y la desaparición de nombres por década. Por un lado, el número de nuevas incorporaciones tiene máximos locales en 1960 y los años 2000. Consecuentemente, tras un periodo de mayor creatividad, las siguientes decadas aumenta la cantidad de nombres que caen en desuso, teniendo picos en los años 1970 y 2010.
+- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
@@ -682,7 +674,6 @@ plot_compuestos <- grafico_evolucion(
   y_format = scales::label_number(accuracy = 0.1, suffix = " %") # Este formato muestra el eje Y como "XX.X %"
 )
 
-
 ## Cantidad de nombres distintos por década y sexo
 
 # Calculamos la cantidad de nombres distintos por década y sexo
@@ -705,7 +696,6 @@ plot_variedad <- grafico_evolucion(
   title = "Evolución de la Variedad de Nombres Distintos",
   subtitle = "Por década y género (1930-2010)"
 )
-
 
 ## Nuevos nombres por década y sexo
 
@@ -732,7 +722,6 @@ plot_novedad <- grafico_evolucion(
   title = "Aparición de Nombres Nuevos",
   subtitle = "Por década y género (1930-2010)"
 )
-
 
 ## Número de nombres desaparecidos con el tiempo
 
@@ -851,7 +840,7 @@ for (df_decada in lista_df_decadas) {
     labs(title= 'Top 5 nombres más populares por sexo', 
          subtitle= paste('Decada de', decada, 'en la Provincia de Valencia'), 
          x= NULL,
-         y = 'Numero de nacimientos') + 
+         y = 'Número de nacimientos') + 
     theme_light() + 
     theme(axis.text.x = element_text(angle = 45, hjust= 1), 
           plot.title = element_text(face= 'bold', hjust= 0.5), 
@@ -862,8 +851,11 @@ for (df_decada in lista_df_decadas) {
 }
 ```
 
+<<<<<<< HEAD
 
 ```{r echo = FALSE, fig.cap="Top 5 nombres más populares en una determinada década por sexo."}
+=======
+>>>>>>> d33271014c368abab12cfb433df3e990df8ee874
 # Mostrar solo las gráficas de 1930, 2000 y 2020
 for (dec in c("1930", "2000", "2020")) {
   if (dec %in% names(lista_graficos_finales)) {
@@ -877,7 +869,11 @@ for (dec in c("1930", "2000", "2020")) {
 ```
 
 ### Conclusiones
+El análisis de los registros del Instituto Nacional de Estadística para la provincia de Valencia, correspondientes al periodo 1930–2020, evidencia una distribución marcadamente asimétrica: la mayoría de los nacimientos se concentra en un número reducido de nombres, mientras que una gran cantidad presenta frecuencias muy bajas. Esta estructura justifica el uso de métodos exploratorios y visuales para representar adecuadamente las tendencias observadas.
 
+A lo largo del periodo analizado se aprecia una clara transformación en los patrones de denominación. Desde mediados del siglo XX se incrementa la diversidad de nombres y disminuye de forma sostenida el uso de nombres compuestos, acompañada por una reducción progresiva en la longitud media. Estos cambios reflejan una tendencia cultural hacia nombres más breves, simples y variados. Asimismo, a partir de la década de 1980 se observa un notable aumento de nombres de origen valenciano, asociado al proceso de recuperación lingüística y cultural posterior al final de la dictadura franquista.
+
+Los resultados también muestran que los nombres unisex constituyen una proporción marginal dentro del conjunto y, en la mayoría de los casos, su uso se concentra de manera pronunciada en uno de los dos sexos. En conjunto, los gráficos analizados confirman un cambio gradual y sostenido en las preferencias de la población: el repertorio de nombres ha pasado de ser tradicional y homogéneo a ser más diverso, moderno y representativo de la variedad cultural de la sociedad valenciana
 
 ```{r echo = FALSE}
 # Comparación de popularidad de un grupo de nombres
