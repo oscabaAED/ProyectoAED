@@ -279,8 +279,8 @@ Los objetivos principales de este trabajo son los siguientes:
 
 - Estudiar la influencia de factores socioculturales y lingüísticos en la elección de nombres.
 
-OJO ESTAN REPETIDOS, ELEGIR UNO (igual el de arriba es mas claro y bonito)
-# Objetivos 
+
+<!--# Objetivos 
 <!-- 1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado. -->
 <!-- 2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas. -->
 <!-- 3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo. -->
@@ -371,7 +371,6 @@ Nom_populares_tabla <- Nom_populares %>% select(Decada, Sexo, Nombre) %>%
 
 # Mostramos la tabla con el resultado para nombres populares
 if(knitr::is_latex_output()){
-  # Para añadirla al pdf la dividimos en 2 ya que es muy larga
   kable(Nom_populares_tabla,
         caption = 'Cinco nombres más populares por década y sexo',
               format="latex", booktabs = TRUE) %>%
@@ -492,7 +491,7 @@ heatmap_top25 <- ggplot(
 #suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
 ```
 
-```{r, echo=FALSE, out.width='75%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center'}
 knitr::include_graphics("../figs/Heatmap25.png")
 ```
 
@@ -545,14 +544,15 @@ Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./
 #suppressMessages(ggsave('../figs/NombresValencianos.png', Plot_nombres_valencianos))
 ```
 
-```{r, echo=FALSE, out.width='80%', fig.align='center'}
+```{r, echo=FALSE, out.width='60%', fig.align='center'}
 knitr::include_graphics("../figs/NombresValencianos.png")
 ```
 
 
 
-También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
+
 ```{r echo = FALSE}
+# Nombres ambos sexos
 # Función para ver qué nombres aparecen en ambos sexos
 Nombres_nb <- function(){
   Nombres_tidy %>%
@@ -583,12 +583,14 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
+
 ```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
 cada_sexo_nb <- Nombres_tidy %>%
   filter(Nombre %in% unisex) %>%
   group_by(Nombre, Sexo) %>%
-  summarise(Total=sum(Nac., na.rm = TRUE)) %>%
+  summarise(Total=sum(Nac., na.rm = TRUE), .groups = "drop_last") %>%
   pivot_wider(names_from = Sexo, values_from = Total) %>%
   group_by(Nombre) %>%
   summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
