@@ -193,14 +193,16 @@ vis_Nombres <- vis_dat(Nombres) + labs(
     subtitle = info_registros
   ) +
   theme(
-    axis.text.x   = element_text(angle = 90))
+    axis.text.x   = element_text(angle = 90),
+    plot.subtitle = element_text(size=12)
+    )
 # Ya no la guardo porque ya la tengo y si se guarda mientras se hace knit sale mal
 #suppressMessages(ggsave('../figs/VisdatNombresSucio.png', vis_Nombres))
 
 # Para que se vea bien en el pdf añadiremos la figura como imagen
 ```
 
-```{r, echo=FALSE, out.width='75%', fig.align='center', fig.cap="Visualización de la estructura inicial de los datos."}
+```{r, echo=FALSE, out.width='65%', fig.align='center', fig.cap="Visualización de la estructura inicial de los datos."}
 knitr::include_graphics("../figs/VisdatNombresSucio.png")
 ```
 
@@ -258,7 +260,7 @@ vis_Nombres_tidy <- vis_dat(Nombres_tidy) + labs(
 #suppressMessages(ggsave('../figs/VisdatNombresTidy.png', vis_Nombres_tidy))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Visualización de la estructura de los datos en formato tidy."}
+```{r, echo=FALSE, out.width='50%', fig.align='center', fig.cap="Visualización de la estructura de los datos en formato tidy."}
 knitr::include_graphics("../figs/VisdatNombresTidy.png")
 ```
 
@@ -340,7 +342,7 @@ En consecuencia, el conjunto de datos presenta una distribución frecuencial no 
 
 Nuestros datos están divididos por década, pero podemos combinarlos con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020. Para ello, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total.
 
-En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los seis nombres más populares del periodo analizado como muestra representativa.
+En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los cinco nombres más populares del periodo analizado como muestra representativa.
 
 ```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
@@ -359,7 +361,7 @@ Frecuencia_nombres <- Nombres_tidy %>%
 ```{r echo=FALSE, results='asis'}
 if(knitr::is_latex_output()){
   # Para editar el tamaño de la tabla en el pdf (son muy grandes)
-  head(Frecuencia_nombres) %>% kable(caption = "Muestra del resultado del estudio de frecuencias totales",
+  head(Frecuencia_nombres,5) %>% kable(caption = "Muestra del resultado del estudio de frecuencias totales",
               format="latex", booktabs = TRUE) %>%
   kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
                 font_size = 8)
@@ -407,7 +409,7 @@ heatmap_top25 <- ggplot(
 #suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Popularidad de los 25 nombres más frecuentes por década."}
+```{r, echo=FALSE, out.width='50%', fig.align='center', fig.cap="Popularidad de los 25 nombres más frecuentes por década."}
 knitr::include_graphics("../figs/Heatmap25.png")
 ```
 
@@ -460,7 +462,7 @@ Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./
 #suppressMessages(ggsave('../figs/NombresValencianos.png', Plot_nombres_valencianos))
 ```
 
-```{r, echo=FALSE, out.width='60%', fig.align='center', fig.cap="Evolución de nombres valencianos populares."}
+```{r, echo=FALSE, out.width='70%', fig.align='center', fig.cap="Evolución de nombres valencianos populares."}
 knitr::include_graphics("../figs/NombresValencianos.png")
 ```
 
@@ -496,8 +498,8 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos sexos.
-
+En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos sexos, como se puede observar en la siguiente tabla.
+\newpage
 ```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
 cada_sexo_nb <- Nombres_tidy %>%
@@ -757,19 +759,19 @@ plot_desaparicion <- grafico_evolucion(
 ```
 
 
-```{r echo = FALSE, fig.cap="Total de nacimientos (A) y variedad de nombres distintos (B) por década."}
+```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Total de nacimientos (A) y variedad de nombres distintos (B) por década."}
 (plot_nacimientos / plot_variedad) + 
   plot_annotation(tag_levels = 'A')
 ```
 
 
-```{r echo = FALSE, fig.cap="Porcentaje de nombres compuestos (A) y longitud promedio de los nombres (B) por década."}
+```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Porcentaje de nombres compuestos (A) y longitud promedio de los nombres (B) por década."}
 (plot_compuestos / plot_longitud) + 
   plot_annotation(tag_levels = 'A')
 ```
 
 
-```{r echo = FALSE, fig.cap="Aparición de nuevos nombres (A) y desaparición de nombres (B) por década."}
+```{r echo = FALSE, fig.dim=c(8,5), fig.cap="Aparición de nuevos nombres (A) y desaparición de nombres (B) por década."}
 (plot_novedad / plot_desaparicion) + 
   plot_annotation(tag_levels = 'A')
 ```
@@ -865,7 +867,7 @@ for (dec in c("1930", "2000", "2020")) {
 
 ```
 
-### Conclusiones
+# Conclusiones
 El análisis de los registros del Instituto Nacional de Estadística para la provincia de Valencia, correspondientes al periodo 1930–2020, evidencia una distribución marcadamente asimétrica: la mayoría de los nacimientos se concentra en un número reducido de nombres, mientras que una gran cantidad presenta frecuencias muy bajas. Esta estructura justifica el uso de métodos exploratorios y visuales para representar adecuadamente las tendencias observadas.
 
 A lo largo del periodo analizado se aprecia una clara transformación en los patrones de denominación. Desde mediados del siglo XX se incrementa la diversidad de nombres y disminuye de forma sostenida el uso de nombres compuestos, acompañada por una reducción progresiva en la longitud media. Estos cambios reflejan una tendencia cultural hacia nombres más breves, simples y variados. Asimismo, a partir de la década de 1980 se observa un notable aumento de nombres de origen valenciano, asociado al proceso de recuperación lingüística y cultural posterior al final de la dictadura franquista.
@@ -873,6 +875,9 @@ A lo largo del periodo analizado se aprecia una clara transformación en los pat
 Los resultados también muestran que los nombres unisex constituyen una proporción marginal dentro del conjunto y, en la mayoría de los casos, su uso se concentra de manera pronunciada en uno de los dos sexos. En conjunto, los gráficos analizados confirman un cambio gradual y sostenido en las preferencias de la población: el repertorio de nombres ha pasado de ser tradicional y homogéneo a ser más diverso, moderno y representativo de la variedad cultural de la sociedad valenciana
 
 ```{r echo = FALSE}
+# Este apartado era más una curiosidad, interesante a la hora de enseñar resultados a la clase pero no aporta demasiado a la elaboración del trabajo. Por ello y por espacio no vamos a incluir este estudio en el trabajo, pero sí en la presentación
+
+
 # Comparación de popularidad de un grupo de nombres
 
 # Podemos aplicar el mismo procedimiento que hemos utilizado para evaluar características generales para extraer información de una determinada muestra de nombres de interés.  
@@ -910,7 +915,7 @@ ranking_tabla <- ranking_nombres_clase %>%
 ```
 
 
-```{r echo = FALSE, results='hide', fig.cap="Ranking de nombres de la clase en la década de los 2000."}
+```{r echo = FALSE, results='hide', fig.cap="Ranking de nombres de la clase en la década de los 2000.", fig.show='hide'}
 # Gráfico del ranking de la clase, ponemos results hide porque sólo nos interesa tenerlo para la presentación
 ggplot(ranking_nombres_clase, aes(x = reorder(Nombre, Nac.), y = Nac.)) +
   geom_col(fill = "steelblue") +
