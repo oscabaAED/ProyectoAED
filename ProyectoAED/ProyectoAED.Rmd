@@ -1,5 +1,5 @@
 ---
-title: Frecuencias de nombres de la provincia de Valencia a lo largo de las decadas de 1930 a 2020
+title: Frecuencias de nombres de la provincia de Valencia a lo largo de las décadas de 1930 a 2020
 author:
   - name: Óscar Camacho Barreda
   - name: Florencia Pellegrini
@@ -10,7 +10,7 @@ type: article
 status: submit
 
 simplesummary: |
-  El proyecto analiza la evolución de los nombres en la provincia de Valencia entre 1930 y 2020 utilizando datos del Instituto Nacional de Estadística (INE).Tras la transformación del conjunto en formato tidy, los resultados evidencian una mayor diversidad en la elección de nombres, la reducción de los compuestos y el resurgimiento de nombres valencianos tras la década de 1970.
+  El proyecto analiza la evolución de los nombres en la provincia de Valencia entre 1930 y 2020 utilizando datos del Instituto Nacional de Estadística (INE). Tras la transformación del conjunto en formato tidy, los resultados evidencian una mayor diversidad en la elección de nombres, la reducción de los compuestos y el resurgimiento de nombres valencianos tras la década de 1970.
 abstract: |
   Este trabajo presenta un análisis exploratorio de los patrones en la elección de nombres en la provincia de Valencia durante el periodo 1930–2020, utilizando los registros oficiales del Instituto Nacional de Estadística (INE). A partir de múltiples ficheros segmentados por década y sexo, se lleva a cabo un proceso de integración y depuración de los datos, reestructurándolos en formato tidy para su análisis cuantitativo y visual. El estudio examina la evolución temporal del número de nacimientos, la frecuencia relativa de los nombres, la diversidad y renovación del repertorio de nombres, así como la longitud media y la proporción de nombres compuestos. Los resultados ponen de manifiesto una tendencia hacia nombres más breves y variados, una disminución sostenida de los compuestos y un notable incremento de nombres de origen valenciano tras el fin de la dictadura franquista. Estos cambios evidencian la influencia de factores socioculturales y lingüísticos en la elección de los nombres a lo largo del último siglo.
   
@@ -87,17 +87,17 @@ knitr::opts_chunk$set(
 
 ## Importación inicial de los datos  
 
-Para gestionar la información dispersa en múltiples archivos, es necesario leer cada fichero .csv individualmente. De sus nombres de archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
+Para gestionar la información dispersa en múltiples archivos es necesario leer cada fichero .csv individualmente, asegurandonos de hacerlo con la codificación correcta (Windows-1252 en este caso). A partir del nombre de cada archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
 
-Originalmente, cada archivo cuenta con tres variables:  
+Originalmente, cada archivo contiene tres variables:  
 
 - Nombre: Nombre propio registrado.  
 
 - Total: Número total de nacimientos con ese nombre en esa década específica (frecuencia absoluta).  
 
-- Por mil: Frecuencia relativa del nombre por cada mil nacimientos.  
+- Por mil ‰: Frecuencia relativa del nombre por cada mil nacimientos.  
 
-Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (Nombres) utilizando la columna "Nombre" como clave común.   
+Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (`Nombres`) utilizando la columna `Nombre` como clave común, obteniendo así un conjunto estructurado en formato _tidy_ que permite un análisis más flexible.  
 
 
 ```{r echo = FALSE}
@@ -180,7 +180,6 @@ rm(list = grep('Nombres', ls(), value=TRUE, invert = TRUE))
 ```
 
 Una vez hecha la unión podemos realizar una primera evaluación visual de los datos con herramientas de la librería `visdat`.  
-Una vez hecha la unión podemos realizar una primera evaluación visual de los datos con herramientas de la librería `visdat`.  
 ```{r echo=FALSE, fig.dim=c(3,2), fig.show='hide'}
 # Contamos todas las frecuencias disponibles viendo cuáles no son NA y sumando
 completos <- sum(!is.na(Nombres[,colnames(Nombres)!=c('Nombre','Sexo')]))
@@ -205,17 +204,17 @@ vis_Nombres <- vis_dat(Nombres) + labs(
 knitr::include_graphics("../figs/VisdatNombresSucio.png")
 ```
 
-Esta representación permite observar de manera sencilla los tipos de las variables. Podemos comprobar que estos han sido estructurados de manera correcta ya que contamos con `Nombres` de tipo `character` (propio de cadenas de texto), `Sexo` como variable de tipo factor (adecuado para variables categóricas con limitadas opciones) y todas las frecuencias presentes son de tipo numérico.  
-No obstante también podemos observar claramente otra característica principal del dataframe creado, que es la gran cantidad de datos faltantes (`NA`) que hemos introducido a causa de la combinación de diversos conjuntos de datos con diferente nombre.  Por otra parte, también contamos con multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
+Esta representación permite observar de manera sencilla los tipos de las variables. Podemos comprobar que estos han sido estructurados de manera correcta ya que contamos con `Nombre` de tipo `character` (propio de cadenas de texto), `Sexo` como variable de tipo factor (adecuado para variables categóricas con limitadas opciones) y todas las frecuencias presentes son de tipo numérico.  
+No obstante también podemos observar claramente otra característica principal del dataframe creado, que es la gran cantidad de datos faltantes (`NA`) que hemos introducido a causa de la combinación de diversos conjuntos de datos con diferente nombre. Por otra parte, también contamos con multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
 
-Ambos problemas, podrán resolverse transformando este dataframe resultante a formato tidy, facilitando así su manipulación y análisis gráfico. 
+Ambos problemas, podrán resolverse transformando este dataframe resultante a formato _tidy_, facilitando así su manipulación y análisis gráfico. 
 
 
-## Convertir el dataframe a formato tidy
+## Convertir el dataframe a formato _tidy_
 
-Dado que el dataframe Nombres contiene dos columnas separadas por cada década, se procede a su reestructuración utilizando funciones de tidyr y dplyr. Esta conversión a formato largo permite condensar estas múltiples columnas, quedando variables más claras: Nombre, Sexo, Década, Nac. y Nac./1000.  
+El dataframe `Nombres` contiene inicialmente múltiples columnas asociadas a cada década, lo que dificulta su manipulación y análisis. Para obtener una estructura más eficiente, se procede a su transformación a formato _tidy_ mediante funciones de los paquetes `tidyr` y `dplyr.` Esta conversión a formato largo permite condensar estas múltiples columnas, quedando variables más claras: Nombre, Sexo, Década, Nac. y Nac./1000.  
 
-Separar las variables de década y frecuencias en dos columnas también nos permitirá limpiar el dataframe, eliminando correspondientes a las décadas en que un nombre determinado tiene por frecuencia no disponible (`NA`) sin afectar a los registros del resto de variables.  
+Separar las variables de década y frecuencias en dos columnas también nos permitirá limpiar el dataframe, eliminando registros correspondientes a las décadas en que un nombre determinado tiene por frecuencia no disponible (`NA`) sin afectar a los registros del resto de variables.  
 
 ```{r echo = FALSE}
 # Pasamos a longer para poder manejar mejor los datos a la hora de representarlos o hacer cálculos estadísticos
@@ -230,7 +229,7 @@ Nombres_tidy <- Nombres_longer %>%
   drop_na()
 ```
 
-Una vez tranformado el dataframe a formato tidy, realizamos de nuevo una inspección visual de su contenido.  
+Una vez tranformado el dataframe a formato _tidy_, realizamos de nuevo una inspección visual de su contenido.  
 
 ```{r echo=FALSE, fig.dim=c(3,2), fig.show='hide'}
 # Contamos todas las frecuencias disponibles a partir del número de columnas (eliminamos NAs)
@@ -264,13 +263,30 @@ vis_Nombres_tidy <- vis_dat(Nombres_tidy) + labs(
 knitr::include_graphics("../figs/VisdatNombresTidy.png")
 ```
 
-Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura tidy será en consecuencia más sencilla de manipular y más eficiente para contener la información disponible.  
+Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura _tidy_ será en consecuencia más sencilla de manipular y más eficiente para contener la información disponible.  
 
-Cabe destacar también que la nueva variable generada para las décadas es de tipo caracter, dado que para nuestro análisis las decas serán utilizadas como clasificador (variable categórica) esta estructura es adecuada, al no estar haciendo operaciones con fechas tampoco será necesario pasar a formato fecha.
+Cabe destacar también que la nueva variable generada para las décadas es de tipo carácter, dado que para nuestro análisis serán utilizadas como clasificador (variable categórica) esta estructura es adecuada para los objetivos del análisis, al no estar haciendo operaciones con fechas tampoco será necesario pasar a formato fecha.
 
-## Descripción general de los datos
 
-Previamente a realizar el estudio deseado para este conjunto de datos resultará necesario conocer de manera general, sus características.  
+# Objetivos (añadir algo más cuando lo acabemos)
+Los objetivos principales de este trabajo son los siguientes:
+
+- Analizar la evolución temporal de la popularidad de los nombres en la provincia de Valencia.
+
+- Comparar las tendencias entre los distintos géneros.
+
+- Identificar la aparición y desaparición de nombres a lo largo del tiempo.
+
+- Estudiar la influencia de factores socioculturales y lingüísticos en la elección de nombres.
+
+
+# Análisis
+
+## Análisis univariante
+
+### Descripción general de los datos
+
+En primer lugar es conveniente conocer, de manera general, las características de el conjunto de datos con el que vamos a trabajar. Para ello haremos un sumario inicial de los datos en formato tidy.   
 ```{r echo=FALSE}
 # Todos los paquetes para hacer tablas que he encontrado han tenido problemas para crear una tabla con summary()
 ## creamos aquí una función que corrija el formato de la tabla y la haga dataframe para que aparezca bien en el documento
@@ -301,6 +317,10 @@ summary_para_table <- function(df){
 }
 # Obtenemos nuestra tabla
 k <- summary_para_table(Nombres_tidy)
+```
+
+
+```{r echo=FALSE, results='asis'}
 if(knitr::is_latex_output()){
   # Para editar el tamaño de la tabla en el pdf (son muy grandes)
   k %>% kable(caption = "Resumen general de nuestro conjunto de datos en formato tidy",
@@ -311,7 +331,7 @@ if(knitr::is_latex_output()){
   # En el propio rmarkdown creo que aparece mejor el formato pr defecto
   print(k)
 }
-
+ 
 ```
 
 A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
@@ -319,15 +339,17 @@ A partir del sumario inicial mostrado previamente ya se puede identificar una ca
 Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.  La distribución de frecuencias es, por tanto, muy diferente gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución.
 
 
-# Objetivos (por poner algo de momento)
+# Objetivos 
 1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado.
 2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas.
 3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo.
 4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica.
 
-# Análisis
+### Nombres más populares y su evolución temporal
 
-## Análisis univariante
+Para determinados análisis también es conveniente tener datos absolutos sobre la cantidad de nacimientos totales para cada nombre y su proporción, obtendremos esta información a partir de la manipulación de nuestro dataframe tidy original.  
+A continuación mostramos una pequeña sección (la cabecera) de este conjunto de datos, como representativo del conjunto completo.
+
 ```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
 #Como sabemos que en la variable sexo las 2 categorias estan en proporción 50-50 y en la variable decada las categorias estan en proporción 0.1, obviamos este estudio y nos concentramos en los nombres. 
@@ -335,15 +357,74 @@ Por estos factores podemos suponer que contamos con una gran cantidad de nombres
 # Frecuencia de la variable 'Nombre'
 #A partir del dataframe tidy, agrupo por nombre y sumo la cantidad de nacimientos totales. Luego para hacer la proporción, debo desagrupar. Finalmente ordeno acorde al conteo de personas con ese nombre.
 Frecuencia_nombres <- Nombres_tidy %>%
-  group_by(Nombre) %>%
-  summarise(Nacimientos_Totales = sum(Nac., na.rm = TRUE))  %>% #Sumo los nacimientos
-  ungroup() %>%
+  group_by(Nombre, Sexo) %>%
+  summarise(Nacimientos_Totales = sum(Nac., na.rm = TRUE), .groups = "drop")  %>% #Sumo los nacimientos
   mutate(Proporcion = Nacimientos_Totales / sum(Nacimientos_Totales)) %>% #Proporción
   arrange(desc(Nacimientos_Totales))  
-Frecuencia_nombres
+
 ```
 
-## Pruebas de evoluciones temporales
+```{r echo=FALSE, results='asis'}
+if(knitr::is_latex_output()){
+  # Para editar el tamaño de la tabla en el pdf (son muy grandes)
+  head(Frecuencia_nombres) %>% kable(caption = "Muestra del resultado del estudio de frecuencias totales",
+              format="latex", booktabs = TRUE) %>%
+  kable_styling(latex_options=c("scale_down","hold_position"), full_width = F,
+                font_size = 8)
+} else{
+  # En el propio rmarkdown creo que aparece mejor el formato pr defecto
+  print(head(Frecuencia_nombres))
+}
+
+```
+
+Esta distribución facilitará, entre otras cosas, acceder a los nombres globalmente más populares (hemos escogido utilizar los 25 nombres más populares), extrayéndolos de esta estructura podemos luego realizar un análisis de su evolución temporal utilizando un heatmap, como se muestra a continuación.  
+
+
+```{r, echo=FALSE}
+top25_nombres <- Frecuencia_nombres %>%
+  slice(1:25) %>%
+  pull(Nombre)
+
+top25 <- Nombres_tidy %>%
+  filter(Nombre %in% top25_nombres, Decada != 2020)
+
+heatmap_top25 <- ggplot(
+  top25,
+  aes(x = factor(Decada),
+      y = reorder(Nombre, Nac.),
+      fill = Nac.)
+) +
+  geom_tile(color = "white") +
+  scale_fill_viridis(option = "D", direction = 1) +
+  labs(
+    title = "Popularidad de los 25 Nombres Más Frecuentes por Década",
+    subtitle = "Frecuencia total de nacimientos por nombre y década",
+    x = "Década",
+    y = "Nombre",
+    fill = "Frecuencia"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    panel.grid = element_blank()
+  )
+
+# Opción de guardar en un comentario ya que no es necesaria en todas las ejecuciones
+suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
+```
+
+```{r, echo=FALSE, out.width='75%', fig.align='center'}
+knitr::include_graphics("../figs/Heatmap25.png")
+```
+
+
+
+
+
+### Pruebas de evoluciones temporales
 
 El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
 
@@ -388,6 +469,8 @@ ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group
 #print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
 ```
 
+
+
 También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.  
 ```{r echo = FALSE, fig.dim=c(2,2)}
 # Función para ver qué nombres aparecen en ambos sexos
@@ -420,8 +503,6 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-
-También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
 ```{r echo = FALSE, fig.dim=c(2,2)}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
 cada_sexo_nb <- Nombres_tidy %>%
@@ -448,8 +529,14 @@ if(knitr::is_latex_output()){
 
 ```
 
+También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
 
-## Gráficos tendencias nombres
+## Análisis bivariante
+A la hora de trabajar con nombres encontramos un muy claro sesgo de género, como hemos podido comprobar anteriormente al buscar nombres unisex (los encontramos en baja proporción y la mayoría de ellos tienen gran sesgo).  
+
+Por ello es conveniente en la mayoría de los casos realizar el análisis de nuestro conjunto de datos dividiendo los resultados por sexo, como haremos a continuación.
+
+### Gráficos tendencias nombres
 
 Se generan diversas representaciones visuales para analizar la evolución temporal de los datos:
 
@@ -683,43 +770,10 @@ plot_nacimientos / plot_variedad
 plot_compuestos / plot_longitud 
 plot_novedad / plot_desaparicion
 ```
-## Heatmap 25 nombres más populares a lo largo de las décadas
-```{r, echo=FALSE}
-top25_nombres <- Frecuencia_nombres %>%
-  slice(1:25) %>%
-  pull(Nombre)
-
-top25 <- Nombres_tidy %>%
-  filter(Nombre %in% top25_nombres, Decada != 2020)
-
-heatmap_top25 <- ggplot(
-  top25,
-  aes(x = factor(Decada),
-      y = reorder(Nombre, Nac.),
-      fill = Nac.)
-) +
-  geom_tile(color = "white") +
-  scale_fill_viridis(option = "D", direction = 1) +
-  labs(
-    title = "Popularidad de los 25 Nombres Más Frecuentes por Década",
-    subtitle = "Frecuencia total de nacimientos por nombre y década",
-    x = "Década",
-    y = "Nombre",
-    fill = "Frecuencia"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5),
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-    panel.grid = element_blank()
-  )
-
-heatmap_top25
-```
 
 
-## Análisis bivariante
+### Nombres de máxima popularidad en función de década y sexo
+
 ```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
 Nom_populares <- Nombres_tidy %>%
@@ -778,6 +832,10 @@ for (df_decada in lista_df_decadas) {
 }
 ```
 Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres religiosos, pero a partir de 1990 esta tendencia decrece.
+
+
+# Comparación de popularidad de un grupo de nombres
+
 
 ```{r echo = FALSE}
 #Ranking nombres de clase 
