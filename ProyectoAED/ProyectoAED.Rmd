@@ -550,9 +550,9 @@ Para continuar con el estudio de la evolución temporal de los datos, se generan
 
 - Diversidad de nombres: Muestra el número de nombres distintos registrados en cada década. Se observa un crecimiento progresivo hasta 1970, seguido de una ligera estabilización. Este aumento refleja una tendencia hacia una mayor heterogeneidad en la elección de nombres.
 
-- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos cambios revelan tendencias culturales, evidenciando el abandono de nombres largos y tradicionales en favor de opciones más breves.
+- Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
 
-- Renovación: Estudia la aparición y la desaparición de nombres por década. Por un lado, el número de nuevas incorporaciones tiene máximos locales en 1960 y los años 2000. Consecuentemente, tras un periodo de mayor creatividad, las siguientes decadas aumenta la cantidad de nombres que caen en desuso, teniendo picos en los años 1970 y 2010.
+- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes decadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
