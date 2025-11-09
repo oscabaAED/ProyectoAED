@@ -682,7 +682,6 @@ plot_compuestos <- grafico_evolucion(
   y_format = scales::label_number(accuracy = 0.1, suffix = " %") # Este formato muestra el eje Y como "XX.X %"
 )
 
-
 ## Cantidad de nombres distintos por década y sexo
 
 # Calculamos la cantidad de nombres distintos por década y sexo
@@ -705,7 +704,6 @@ plot_variedad <- grafico_evolucion(
   title = "Evolución de la Variedad de Nombres Distintos",
   subtitle = "Por década y género (1930-2010)"
 )
-
 
 ## Nuevos nombres por década y sexo
 
@@ -732,7 +730,6 @@ plot_novedad <- grafico_evolucion(
   title = "Aparición de Nombres Nuevos",
   subtitle = "Por década y género (1930-2010)"
 )
-
 
 ## Número de nombres desaparecidos con el tiempo
 
@@ -843,11 +840,11 @@ for (df_decada in lista_df_decadas) {
           plot.title = element_text(face= 'bold', hjust= 0.5), 
           plot.subtitle = element_text(hjust= 0.5))
   
-   # 🔹 Guardamos todas las gráficas en una lista
+   # Guardamos todas las gráficas en una lista
   lista_graficos_finales[[as.character(decada)]] <- g_actual
 }
 
-# 🔹 Mostrar solo las gráficas de 1930, 2000 y 2020
+# Mostrar solo las gráficas de 1930, 2000 y 2020
 for (dec in c("1930", "2000", "2020")) {
   if (dec %in% names(lista_graficos_finales)) {
     print(lista_graficos_finales[[dec]])
@@ -860,7 +857,11 @@ for (dec in c("1930", "2000", "2020")) {
 ```
 
 ### Conclusiones
+El análisis de los registros del Instituto Nacional de Estadística para la provincia de Valencia, correspondientes al periodo 1930–2020, evidencia una distribución marcadamente asimétrica: la mayoría de los nacimientos se concentra en un número reducido de nombres, mientras que una gran cantidad presenta frecuencias muy bajas. Esta estructura justifica el uso de métodos exploratorios y visuales para representar adecuadamente las tendencias observadas.
 
+A lo largo del periodo analizado se aprecia una clara transformación en los patrones de denominación. Desde mediados del siglo XX se incrementa la diversidad de nombres y disminuye de forma sostenida el uso de nombres compuestos, acompañada por una reducción progresiva en la longitud media. Estos cambios reflejan una tendencia cultural hacia nombres más breves, simples y variados. Asimismo, a partir de la década de 1980 se observa un notable aumento de nombres de origen valenciano, asociado al proceso de recuperación lingüística y cultural posterior al final de la dictadura franquista.
+
+Los resultados también muestran que los nombres unisex constituyen una proporción marginal dentro del conjunto y, en la mayoría de los casos, su uso se concentra de manera pronunciada en uno de los dos sexos. En conjunto, los gráficos analizados confirman un cambio gradual y sostenido en las preferencias de la población: el repertorio de nombres ha pasado de ser tradicional y homogéneo a ser más diverso, moderno y representativo de la variedad cultural de la sociedad valenciana
 
 ```{r echo = FALSE}
 # Comparación de popularidad de un grupo de nombres
