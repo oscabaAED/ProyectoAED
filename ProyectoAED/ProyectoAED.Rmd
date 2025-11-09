@@ -559,7 +559,7 @@ A la hora de trabajar con nombres encontramos un claro sesgo de género, como se
 
 Por ello es conveniente realizar el análisis del conjunto de datos dividiendo los resultados por sexo, como haremos a continuación.
 
-### Gráficos tendencias nombres
+### Evolución de tendencias en los nombres
 
 Para continuar con el estudio de la evolución temporal de los datos, se generan diversas representaciones visuales, las cuales se detallan a continuación.
 
