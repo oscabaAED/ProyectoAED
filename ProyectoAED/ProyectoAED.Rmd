@@ -444,12 +444,12 @@ Nombres_evol_plot <- Nombres_tidy %>%
   mutate(Decada = as.numeric(Decada)) %>%
   filter(!is.na(`Nac./1000`))
 
-Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, shape = Nombre, group = Nombre)) +
   geom_vline(xintercept = 1975, linetype = "dashed", color = "gray40", linewidth = 0.8) +
   annotate("text", x = 1976, y = Inf, label = "Fin de la dictadura franquista",
            hjust = 0, vjust = 1.5, color = "gray40", size = 3.5) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2.5) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
   labs(
     title = "Evolución de Nombres Valencianos Populares",
     subtitle = "Frecuencia por mil nacimientos (1930-2020)",
@@ -518,7 +518,7 @@ cada_sexo_nb <- Nombres_tidy %>%
   summarise(Total=sum(Nac., na.rm = TRUE), .groups = "drop_last") %>%
   pivot_wider(names_from = Sexo, values_from = Total) %>%
   group_by(Nombre) %>%
-  summarise(`% Hombres`=Hombre*100/(Hombre+Mujer), `% Mujeres`=Mujer*100/(Hombre+Mujer))
+  summarise(`% Hombres`=round(Hombre*100/(Hombre+Mujer),2), `% Mujeres`=round(Mujer*100/(Hombre+Mujer),2))
 
 
 # Tabla con los resultados
