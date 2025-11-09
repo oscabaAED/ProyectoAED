@@ -286,7 +286,7 @@ Los objetivos principales de este trabajo son los siguientes:
 
 ### Descripción general de los datos
 
-En primer lugar es conveniente conocer, de manera general, las características de el conjunto de datos con el que vamos a trabajar. Para ello haremos un sumario inicial de los datos en formato tidy.   
+En primer lugar es conveniente conocer, de manera general, las características de el conjunto de datos con el que vamos a trabajar. Para ello haremos un sumario inicial de los datos en formato _tidy_.   
 ```{r echo=FALSE}
 # Todos los paquetes para hacer tablas que he encontrado han tenido problemas para crear una tabla con summary()
 ## creamos aquí una función que corrija el formato de la tabla y la haga dataframe para que aparezca bien en el documento
@@ -341,7 +341,7 @@ Por estos factores, podemos suponer que contamos con una gran cantidad de nombre
 
 ### Nombres más populares y su evolución temporal
 
-Para determinados análisis también es conveniente tener datos absolutos sobre la cantidad de nacimientos totales para cada nombre y su proporción, obtendremos esta información a partir de la manipulación de nuestro dataframe tidy original.  
+Para determinados análisis también es conveniente tener datos absolutos sobre la cantidad de nacimientos totales para cada nombre y su proporción, obtendremos esta información a partir de la manipulación de nuestro dataframe _tidy_ original.  
 A continuación mostramos una pequeña sección (la cabecera) de este conjunto de datos, como representativo del conjunto completo.
 
 ```{r echo = FALSE}
@@ -407,7 +407,7 @@ heatmap_top25 <- ggplot(
   )
 
 # Opción de guardar en un comentario ya que no es necesaria en todas las ejecuciones
-suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
+#suppressMessages(ggsave('../figs/Heatmap25.png', heatmap_top25))
 ```
 
 ```{r, echo=FALSE, out.width='75%', fig.align='center'}
@@ -416,11 +416,13 @@ knitr::include_graphics("../figs/Heatmap25.png")
 
 
 
-
-
 ### Pruebas de evoluciones temporales
 
-El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
+El análisis de la evolución temporal de determinados nombres tradicionalmente valencianos revela un patrón muy marcado: a partir de la década de 1980 su popularidad aumenta de forma pronunciada. Este cambio coincide con el final de la dictadura franquista en 1975, momento en el que se inicia un proceso de recuperación cultural y lingüística en la Comunidad Valenciana, destacando la aprobación en 1983 de la ley de uso y enseñanza del valenciano (LUEV). Puede revisarse esta ley en: <https://www.boe.es/buscar/act.php?id=BOE-A-1984-1851>.
+
+El gráfico siguiente muestra con claridad esta transición: los nombres valencianos seleccionados mantienen frecuencias moderadas o inexistentes durante el periodo previo a 1975, pero experimentan un crecimiento rápido y sostenido desde la década de 1980 en adelante. Este comportamiento respalda la hipótesis de que la política lingüística y la recuperación cultural han desempeñado un papel significativo en la elección de nombres en las generaciones recientes. 
+
+Ahora bien, aunque la mayoría de estos nombres aumentaron notablemente desde 1975, los datos más recientes indican que varios de ellos están experimentando una disminución en su uso. Este descenso apunta a que la política lingüística y la recuperación cultural tuvieron un fuerte impacto en las décadas posteriores a la transición, aunque dicho efecto parece haberse debilitado con el tiempo.
 
 ```{r echo = FALSE, fig.show='hide'}
 # Ranking de nombres por década y sexo
@@ -431,10 +433,10 @@ Decada_2000 <- Nombres_tidy %>%
   group_by(Sexo)
 
 # Evolución de nombres a lo largo del tiempo
-nombres_seleccionados <- c("MARC", "JOAN", "VICENT", "JOSEP")
+nombres_seleccionados <- c("MARC", "JOAN", "JOSEP", "PAU", "GUILLEM")
 
 Nombres_evol_plot <- Nombres_tidy %>%
-  filter(Nombre %in% nombres_seleccionados) %>%
+  filter(Nombre %in% nombres_seleccionados, Sexo == "Hombre") %>%
   mutate(Decada = as.numeric(Decada)) %>%
   filter(!is.na(`Nac./1000`))
 
@@ -457,10 +459,8 @@ Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
     plot.subtitle = element_text(hjust = 0.5, size = 10),
-    legend.position = "bottom"
   )
 
-#print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
 # Opción de guardar en un comentario ya que no es necesaria en todas las ejecuciones
 #suppressMessages(ggsave('../figs/NombresValencianos.png', Plot_nombres_valencianos))
 ```
