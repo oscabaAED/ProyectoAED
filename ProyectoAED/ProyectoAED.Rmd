@@ -279,6 +279,13 @@ Los objetivos principales de este trabajo son los siguientes:
 
 - Estudiar la influencia de factores socioculturales y lingüísticos en la elección de nombres.
 
+OJO ESTAN REPETIDOS, ELEGIR UNO (igual el de arriba es mas claro y bonito)
+# Objetivos 
+<!-- 1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado. -->
+<!-- 2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas. -->
+<!-- 3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo. -->
+<!-- 4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica. -->
+
 
 # Análisis
 
@@ -286,7 +293,7 @@ Los objetivos principales de este trabajo son los siguientes:
 
 ### Descripción general de los datos
 
-En primer lugar es conveniente conocer, de manera general, las características de el conjunto de datos con el que vamos a trabajar. Para ello haremos un sumario inicial de los datos en formato _tidy_.   
+Antes de abordar los análisis específicos, resulta necesario conocer las características generales del conjunto de datos. Para ello realizamos un resumen inicial del dataframe en formato _tidy_.   
 ```{r echo=FALSE}
 # Todos los paquetes para hacer tablas que he encontrado han tenido problemas para crear una tabla con summary()
 ## creamos aquí una función que corrija el formato de la tabla y la haga dataframe para que aparezca bien en el documento
@@ -334,22 +341,16 @@ if(knitr::is_latex_output()){
  
 ```
 
-A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+A partir de dicho sumario se puede identificar una característica fundamental del conjunto de datos: la distribución frecuencial presenta una gran cantidad de nombres a bajas frecuencias, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
-Por estos factores, podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres. La distribución de frecuencias es, por tanto, no gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución. En su lugar, se emplearán métodos exploratorios y visuales que permitan captar adecuadamente esta asimetría y las posibles tendencias en el conjunto de nombres.
-
-
-# Objetivos 
-1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado.
-2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas.
-3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo.
-4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica.
+En consecuencia, nuestro conjunto de datos presenta una distribución de frecuencias no gaussiana, dado que cuenta con una gran cantidad de nombres a baja frecuencia, y la cantidad de nacimientos se encuentra concentrada mayoritariamente en unos pocos nombres. 
+Por este motivo no es conveniente usar las técnicas usuales, adaptadas a esta distribución. En su lugar, se emplearán métodos exploratorios y visuales que permitan captar adecuadamente esta asimetría y las posibles tendencias en el conjunto de nombres.
 
 ### Nombres más populares y su evolución temporal
 
-### Nombres de máxima popularidad en función de década y sexo
-Comenzando con el objetivo Nº 1, realizamos un estudio que muestra los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020.  Esta información se obtiene a partir de la manipulación del dataframe _tidy_ creado, mediante la agrupación por sexo y decada, así como el ordenamiento acorde a la cantidad de personas con ese nombre. Aunque el procedimiento se aplico al conjunto completo de décadas, en este artículo solo se presentan las visualizaciones correspondientes a los años 1930, 2000 y 2020, seleccionadas por su valor representativo y por motivos de espacio. 
-Estas 3 decadas permiten observar con claridad la evolución de las preferencias en la elección de nombres a lo largo del tiempo.  En 1930, predominan nombres de carácter tradicional y religioso, mientras que en el año 2000 los nombres más comunes denotan una diversificación y clara influencias de modas globales. Finalmente, en 2020, se observa una preferencia por nombres breves y modernos, incluyendo nombres de origen valenciano como 'Marc'.
+En relación con el primer y segundo objetivo, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
+
+Aunque el procedimiento se aplicó a todas las décadas, en este artículo solo se presentan los resultados correspondientes a los años 1930, 2000 y 2020, seleccionados por su representatividad y por razones de espacio. Estas tres décadas permiten apreciar con claridad la evolución de las preferencias en la elección de nombres: en 1930 predominan los nombres tradicionales y religiosos; en 2000 se observa una diversificación con influencias globales; y en 2020 destacan nombres breves y modernos, entre ellos algunos de origen valenciano como _Marc_.
 
 ```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
@@ -423,8 +424,9 @@ for (dec in c("1930", "2000", "2020")) {
 
 ```
 
-Dado la variabilidad de estos resultados, realizamos un análisis de los datos absolutos sobre la cantidad de nacimientos totales para cada nombre y su proporción, de esta manera, explorando las frecuencias totales de los nombres a lo largo del periodo estudiado. 
-A continuación, en la siguiente tabla se presenta la cabecera de este conjunto de datos, en el cual se exponen los 6 nombres más populares a lo largo del periodo 1930-2020, como representativo del conjunto completo.
+Para complementar este análisis, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total, con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020.
+
+En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los seis nombres más populares del periodo analizado como muestra representativa.
 
 ```{r echo = FALSE}
 # VARIABLES CATEGÓRICAS (Nombre, Sexo, Decada) - FRECUENCIAS
@@ -454,7 +456,7 @@ if(knitr::is_latex_output()){
 
 ```
 
-Mediante esta distribución realizada, logramos acceder a los nombres más populares, de los cuales escogimos utilizar unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se muestra a continuación.  
+Apartir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, mostrado a continuación.  
 
 ```{r, echo=FALSE}
 top25_nombres <- Frecuencia_nombres %>%
