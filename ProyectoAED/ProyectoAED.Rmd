@@ -341,10 +341,9 @@ if(knitr::is_latex_output()){
  
 ```
 
-A partir de dicho sumario se puede identificar una característica fundamental del conjunto de datos: la distribución frecuencial presenta una gran cantidad de nombres a bajas frecuencias, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+A partir de dicho sumario se identifica una característica fundamental del conjunto de datos: la distribución frecuencial presenta una elevada cantidad de nombres con baja incidencia, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
-En consecuencia, nuestro conjunto de datos presenta una distribución de frecuencias no gaussiana, dado que cuenta con una gran cantidad de nombres a baja frecuencia, y la cantidad de nacimientos se encuentra concentrada mayoritariamente en unos pocos nombres. 
-Por este motivo no es conveniente usar las técnicas usuales, adaptadas a esta distribución. En su lugar, se emplearán métodos exploratorios y visuales que permitan captar adecuadamente esta asimetría y las posibles tendencias en el conjunto de nombres.
+En consecuencia, el conjunto de datos presenta una distribución frecuencial no gaussiana, caracterizada por una fuerte concentración de nacimientos en un número reducido de nombres y una gran cantidad de nombres a baja frecuencia. Por este motivo, no es adecuado usar las técnicas convencionales, adaptadas a esta distribución. En su lugar, se emplean métodos exploratorios y visuales que permitan captar adecuadamente la asimetría y las tendencias en el conjunto de datos.
 
 ### Nombres más populares y su evolución temporal
 
@@ -456,7 +455,7 @@ if(knitr::is_latex_output()){
 
 ```
 
-Apartir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, mostrado a continuación.  
+A partir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se expone a continuación.  
 
 ```{r, echo=FALSE}
 top25_nombres <- Frecuencia_nombres %>%
