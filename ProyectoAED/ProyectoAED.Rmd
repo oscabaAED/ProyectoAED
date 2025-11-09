@@ -100,7 +100,7 @@ Originalmente, cada archivo contiene tres variables:
 
 - Por mil %: Frecuencia relativa del nombre por cada mil nacimientos.  
 
-Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (`Nombres`) utilizando la columna `Nombre` como clave común, obteniendo así un conjunto estructurado en formato _tidy_ que permite un análisis más flexible.  
+Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (`Nombres`) utilizando la columna `Nombre` como clave común. 
 
 
 ```{r echo = FALSE}
@@ -209,7 +209,7 @@ vis_Nombres <- vis_dat(Nombres) + labs(
 knitr::include_graphics("../figs/VisdatNombresSucio.png")
 ```
 
-Esta representación permite observar de manera sencilla los tipos de las variables. Podemos comprobar que estos han sido estructurados de manera correcta ya que contamos con `Nombre` de tipo `character` (propio de cadenas de texto), `Sexo` como variable de tipo factor (adecuado para variables categóricas con limitadas opciones) y todas las frecuencias presentes son de tipo numérico.  
+Esta representación permite observar de manera sencilla los tipos de las variables. Podemos comprobar que estos han sido estructurados de manera correcta ya que contamos con `Nombre` de tipo `character` (propio de cadenas de texto), `Sexo` como variable de tipo `factor` (adecuado para variables categóricas con limitadas opciones) y todas las frecuencias presentes son de tipo `numeric`.  
 No obstante también podemos observar claramente otra característica principal del dataframe creado, que es la gran cantidad de datos faltantes (`NA`) que hemos introducido a causa de la combinación de diversos conjuntos de datos con diferente nombre. Por otra parte, también contamos con multitud de columnas con información de dos variables (frecuencia de nacimientos, ya sea absoluta o por 1000, y año), lo cual dificultará el acceso y manejo de los datos en etapas posteriores.  
 
 Ambos problemas, podrán resolverse transformando este dataframe resultante a formato _tidy_, facilitando así su manipulación y análisis gráfico. 
@@ -269,7 +269,7 @@ knitr::include_graphics("../figs/VisdatNombresTidy.png")
 
 Podemos comprobar que al tranformar el dataframe hemos eliminado los registros que no contienen información sobre las frecuencias (que no son de utilidad para el análisis a realizar) sin reducir el número de observaciones. La estructura _tidy_ será en consecuencia más sencilla de manipular y más eficiente para contener la información disponible.  
 
-Cabe destacar también que la nueva variable generada para las décadas es de tipo carácter, dado que para nuestro análisis serán utilizadas como clasificador (variable categórica) esta estructura es adecuada para los objetivos del análisis, al no estar haciendo operaciones con fechas tampoco será necesario pasar a formato fecha.
+Cabe destacar también que la nueva variable generada para las décadas es de tipo carácter, dado que para nuestro análisis serán utilizadas como clasificador (variable categórica) esta estructura es adecúa al uso de la variable, no es necesario pasar a formato fecha ya que no se va a operar con ellas.
 
 # Objetivos 
 
@@ -789,7 +789,7 @@ plot_desaparicion <- grafico_evolucion(
 
 ### Nombres más populares con división por década y sexo
 
-Para completar el análisis anterior, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
+Para completar el análisis de nombres populares realizado anteriormente, se elaboró un estudio que identifica los cinco nombres más frecuentes por sexo en cada década comprendida entre 1930 y 2020. Esta información se obtiene a partir del dataframe _tidy_ mediante agrupación por sexo y década, y posterior ordenamiento según el número de nacimientos registrados.
 
 ```{r echo = FALSE}
 #Ver los 5 nombres más populares de mujeres y los 5 nombres más populares de hombre por año 
