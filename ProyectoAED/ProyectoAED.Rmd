@@ -59,11 +59,11 @@ Cabe destacar que los datos proceden del censo anual de población a fecha 01/01
 ## Cargar librerías a utilizar
 Para el análisis de los datos utilizaremos las librerías indicadas en la siguiente tabla.  
 
-| Uso                            |              Librerias              |
+| Uso                            |              Librerías              |
 |--------------------------------|:-----------------------------------:|
-| Importar el resto de librerias |                pacman               |
+| Importar el resto de librerías |                pacman               |
 | Manejo de datos                |             dplyr, tidyr            |
-| Visualizacion                  | ggplot2, visdat, viridis, patchwork |
+| Visualización                  | ggplot2, visdat, viridis, patchwork |
 | Tablas                         | kable, kableExtra                   |
 
 ```{r echo=FALSE}
@@ -87,7 +87,7 @@ knitr::opts_chunk$set(
 
 ## Importación inicial de los datos  
 
-Para gestionar la información dispersa en múltiples archivos es necesario leer cada fichero .csv individualmente, asegurandonos de hacerlo con la codificación correcta (Windows-1252 en este caso). A partir del nombre de cada archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
+Para gestionar la información dispersa en múltiples archivos es necesario leer cada fichero .csv individualmente con la codificación correcta (Windows-1252 en este caso). A partir del nombre de cada archivo se extrae información clave, como la década y el sexo al que corresponden los registros.  
 
 Originalmente, cada archivo contiene tres variables:  
 
@@ -95,7 +95,7 @@ Originalmente, cada archivo contiene tres variables:
 
 - Total: Número total de nacimientos con ese nombre en esa década específica (frecuencia absoluta).  
 
-- Por mil ‰: Frecuencia relativa del nombre por cada mil nacimientos.  
+- Por mil %: Frecuencia relativa del nombre por cada mil nacimientos.  
 
 Estas columnas se renombran sistemáticamente añadiendo la década como sufijo para diferenciarlas. Finalmente, todos los dataframes generados se unen en uno solo (`Nombres`) utilizando la columna `Nombre` como clave común, obteniendo así un conjunto estructurado en formato _tidy_ que permite un análisis más flexible.  
 
@@ -340,7 +340,7 @@ if(knitr::is_latex_output()){
  
 ```
 
-A partir de dicho sumario se identifica una característica fundamental del conjunto de datos: la distribución frecuencial presenta una elevada cantidad de nombres con baja incidencia, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
+A partir de dicho resumen se identifica una característica fundamental del conjunto de datos: la distribución frecuencial presenta una elevada cantidad de nombres con baja incidencia, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
 En consecuencia, el conjunto de datos presenta una distribución frecuencial no gaussiana, caracterizada por una fuerte concentración de nacimientos en un número reducido de nombres y una gran cantidad de nombres a baja frecuencia. Por este motivo, no es adecuado usar las técnicas convencionales, adaptadas a esta distribución. En su lugar, se emplean métodos exploratorios y visuales que permitan captar adecuadamente la asimetría y las tendencias en el conjunto de datos.
 
@@ -378,7 +378,7 @@ if(knitr::is_latex_output()){
 
 ```
 
-A partir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos unicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se expone a continuación.  
+A partir de esta distribución, accedemos a los nombres más populares, de los cuales seleccionamos únicamente los 25 primeros para realizar un análisis de su evolución temporal mediante un heatmap, el cual se expone a continuación.  
 
 ```{r, echo=FALSE}
 top25_nombres <- Frecuencia_nombres %>%
@@ -504,7 +504,7 @@ porcentaje_nb <- round(porcentaje_nb, digits = 3)
 porcentaje_nb <- paste0(porcentaje_nb,'%')
 ```
 
-En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos géneros.
+En cuanto a los nombres unisex, entendidos como aquellos registrados en ambos sexos, representan un porcentaje marginal dentro del conjunto (`r porcentaje_nb`) y, en la mayoría de los casos, su distribución se inclina de forma pronunciada hacia uno de los dos sexos.
 
 ```{r echo = FALSE}
 # Tabla para ver qué porcentaje de cada género tiene cada nombre unisex
@@ -552,7 +552,7 @@ Para continuar con el estudio de la evolución temporal de los datos, se generan
 
 - Características de los nombres: Analiza cambios estilísticos, como el porcentaje de nombres compuestos y la longitud media de los nombres respecto al total. Ambas gráficas presentan un incremento inicial hasta mediados del siglo XX y una reducción continua en las décadas posteriores. Estos resultados evidencian una transición cultural hacia nombres más breves y simples, en detrimento de los nombres tradicionales y compuestos.
 
-- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes decadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
+- Renovación: Estudia la aparición y la desaparición de nombres por década. El número de nuevos nombres alcanza máximos locales en 1960 y en los años 2000, reflejando periodos de mayor creatividad en la elección de nombres. Tras estos momentos, en las siguientes décadas aumenta la cantidad de nombres que caen en desuso, con picos en los años 1970 y 2010, lo que marca etapas de cambio generacional en las preferencias. 
 
 ```{r echo = FALSE}
 # Generamos un gráfico a partir de los datos y variables introducidos
@@ -840,7 +840,7 @@ for (df_decada in lista_df_decadas) {
     labs(title= 'Top 5 nombres más populares por sexo', 
          subtitle= paste('Decada de', decada, 'en la Provincia de Valencia'), 
          x= NULL,
-         y = 'Numero de nacimientos') + 
+         y = 'Número de nacimientos') + 
     theme_light() + 
     theme(axis.text.x = element_text(angle = 45, hjust= 1), 
           plot.title = element_text(face= 'bold', hjust= 0.5), 
