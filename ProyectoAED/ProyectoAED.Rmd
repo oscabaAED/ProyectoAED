@@ -347,7 +347,7 @@ En consecuencia, el conjunto de datos presenta una distribución frecuencial no 
 
 ### Nombres más populares y su evolución temporal
 
-Para complementar este análisis, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total, con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020.
+Nuestros datos están divididos por década, pero podemos combinarlos con el fin de evaluar las frecuencias acumuladas a lo largo del periodo 1930–2020. Para ello, se calcularon los valores absolutos de nacimientos por nombre y su proporción respecto al total.
 
 En la siguiente tabla se muestra la cabecera de este conjunto de datos, que incluye los seis nombres más populares del periodo analizado como muestra representativa.
 
