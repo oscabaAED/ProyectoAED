@@ -851,11 +851,8 @@ for (df_decada in lista_df_decadas) {
 }
 ```
 
-<<<<<<< HEAD
 
 ```{r echo = FALSE, fig.cap="Top 5 nombres más populares en una determinada década por sexo."}
-=======
->>>>>>> d33271014c368abab12cfb433df3e990df8ee874
 # Mostrar solo las gráficas de 1930, 2000 y 2020
 for (dec in c("1930", "2000", "2020")) {
   if (dec %in% names(lista_graficos_finales)) {
