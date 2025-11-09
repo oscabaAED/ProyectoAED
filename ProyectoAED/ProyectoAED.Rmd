@@ -62,12 +62,38 @@ Cabe destacar que los datos proceden del censo anual de población a fecha 01/01
 ## Cargar librerías a utilizar
 Para el análisis de los datos utilizaremos las librerías indicadas en la siguiente tabla.  
 
-| Uso                            |              Librerías              |
-|--------------------------------|:-----------------------------------:|
-| Importar el resto de librerías |                pacman               |
-| Manejo de datos                |             dplyr, tidyr            |
-| Visualización                  | ggplot2, visdat, viridis, patchwork |
-| Tablas                         | kable, kableExtra                   |
+```{r echo=FALSE, results='asis'}
+librerias <- data.frame(
+  Uso = c(
+    "Importar el resto de librerías",
+    "Manejo de datos",
+    "Visualización",
+    "Tablas"
+  ),
+  Librerías = c(
+    "pacman",
+    "dplyr, tidyr",
+    "ggplot2, visdat, viridis, patchwork",
+    "kable, kableExtra"
+  )
+)
+
+if (knitr::is_latex_output()) {
+  librerias |>
+    knitr::kable(
+      caption = "Librerías utilizadas en el análisis.",
+      format  = "latex",
+      booktabs = TRUE
+    ) |>
+    kableExtra::kable_styling(
+      latex_options = c("hold_position"),
+      full_width    = FALSE,
+      position      = "center"
+    )
+} else {
+  print(librerias)
+}
+```
 
 ```{r echo=FALSE}
 library(pacman) # Para asegurarnos de que se cargarán todas las librerías aunque se tengan que instalar
