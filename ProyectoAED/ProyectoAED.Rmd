@@ -336,7 +336,7 @@ if(knitr::is_latex_output()){
 
 A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
-Por estos factores podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres.  La distribución de frecuencias es, por tanto, muy diferente gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución.
+Por estos factores, podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres. La distribución de frecuencias es, por tanto, no gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución. En su lugar, se emplearán métodos exploratorios y visuales que permitan captar adecuadamente esta asimetría y las posibles tendencias en el conjunto de nombres.
 
 
 # Objetivos 
@@ -428,7 +428,7 @@ knitr::include_graphics("../figs/Heatmap25.png")
 
 El análisis de nombres valencianos, como "Marc", muestra una gran evolución tras finalizar la dictadura, indicando la posible opresión cultural y lingüística durante este periodo. 
 
-```{r echo = FALSE, fig.dim=c(5,3.5)}
+```{r echo = FALSE, fig.show='hide'}
 # Ranking de nombres por década y sexo
 Decada_2000 <- Nombres_tidy %>%
   filter(Decada == 2000, Sexo == "Hombre") %>% 
@@ -444,7 +444,7 @@ Nombres_evol_plot <- Nombres_tidy %>%
   mutate(Decada = as.numeric(Decada)) %>%
   filter(!is.na(`Nac./1000`))
 
-ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
+Plot_nombres_valencianos <- ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group = Nombre)) +
   geom_vline(xintercept = 1975, linetype = "dashed", color = "gray40", linewidth = 0.8) +
   annotate("text", x = 1976, y = Inf, label = "Fin de la dictadura franquista",
            hjust = 0, vjust = 1.5, color = "gray40", size = 3.5) +
@@ -467,6 +467,12 @@ ggplot(Nombres_evol_plot, aes(x = Decada, y = `Nac./1000`, color = Nombre, group
   )
 
 #print(Nombre_evol) # Al acabar la dictadura crecen rápidamente nombres valencianos como Marc
+# Opción de guardar en un comentario ya que no es necesaria en todas las ejecuciones
+#suppressMessages(ggsave('../figs/NombresValencianos.png', Plot_nombres_valencianos))
+```
+
+```{r, echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics("../figs/NombresValencianos.png")
 ```
 
 
@@ -529,7 +535,6 @@ if(knitr::is_latex_output()){
 
 ```
 
-También se observa que los nombres unisex (registrados tanto para hombres como para mujeres) representan un porcentaje muy bajo del total (`r porcentaje_nb`) y, por lo general, su uso tiende a estar más sesgado hacia uno de los dos sexos.
 
 ## Análisis bivariante
 A la hora de trabajar con nombres encontramos un muy claro sesgo de género, como hemos podido comprobar anteriormente al buscar nombres unisex (los encontramos en baja proporción y la mayoría de ellos tienen gran sesgo).  
@@ -836,6 +841,8 @@ Notar en los gráficos que hasta 1970-1980 habia mayor cantidad de nombres relig
 
 # Comparación de popularidad de un grupo de nombres
 
+Podemos aplicar el mismo procedimiento que hemos utilizado para evaluar características generales para extraer información de una determinada muestra de nombres de interés.  
+Como curiosidad, hemos escogido para este proyecto utilizar como muestra los nombres de nuestros compañeros, y extraer datos acerca de la frecuencia para la década en la que nacieron la mayoría de ellos (2000).
 
 ```{r echo = FALSE}
 #Ranking nombres de clase 
