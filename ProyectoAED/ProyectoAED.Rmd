@@ -45,6 +45,9 @@ header-includes:
   - '\setlength{\headheight}{20pt}'
   - '\usepackage{graphicx}'
   - '\usepackage{float}'
+  - '\usepackage{caption}'
+  - '\captionsetup[figure]{justification=centering,singlelinecheck=false}'
+  - '\captionsetup[table]{justification=centering,singlelinecheck=false}'
 
 ---
 
