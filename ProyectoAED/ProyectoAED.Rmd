@@ -331,13 +331,19 @@ if(knitr::is_latex_output()){
   # En el propio rmarkdown creo que aparece mejor el formato pr defecto
   print(k)
 }
-
+ 
 ```
 
 A partir del sumario inicial mostrado previamente ya se puede identificar una característica fundamental de nuestro conjunto de datos. La distribución frecuencial cuenta con una gran cantidad de nombres a frecuencias bajas, como podemos deducir a partir de la mediana y los cuartiles, pero la media y el máximo de frecuencia de los nombres son muy superiores a estos valores.   
 
 Por estos factores, podemos suponer que contamos con una gran cantidad de nombres de baja frecuencia, pero la cantidad de nacimientos se encuentra concentrada, mayoritariamente, en un comparativamente pequeño conjunto de nombres. La distribución de frecuencias es, por tanto, no gaussiana, por lo que no es conveniente usar las técnicas usuales que estén adaptadas a esta distribución. En su lugar, se emplearán métodos exploratorios y visuales que permitan captar adecuadamente esta asimetría y las posibles tendencias en el conjunto de nombres.
 
+
+# Objetivos 
+1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado.
+2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas.
+3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo.
+4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica.
 
 ### Nombres más populares y su evolución temporal
 
