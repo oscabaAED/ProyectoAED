@@ -278,14 +278,6 @@ Los principales objetivos de este trabajo son los siguientes:
 
 - Estudiar la influencia de factores socioculturales y lingüísticos en la elección de nombres.
 
-
-<!--# Objetivos 
-<!-- 1) Realizar un estudio de frecuencias de los nombres en la Provincia de Valencia entre 1930 y 2020, identificando los más populares tanto por década como en el conjunto del periodo estudiado. -->
-<!-- 2) Examinar la evolución temporal de los nombres en la Provincia de Valencia, con el fin de detectar patrones y tendencias significativas. -->
-<!-- 3) Analizar la aparición de nuevos nombres y la desaparición progresiva de otros a lo largo del tiempo. -->
-<!-- 4) Explorar la posible relación entre los cambios en la elección de nombres y factores socioculturales asociados a cada etapa histórica. -->
-
-
 # Análisis
 
 ## Análisis univariante
